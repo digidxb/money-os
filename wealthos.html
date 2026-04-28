@@ -541,6 +541,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <button class="nav-item" onclick="goTo('goals',this)"><span class="nav-icon">🏆</span>Goals<span class="nav-dot"></span></button>
         <button class="nav-item" onclick="goTo('subscriptions',this)"><span class="nav-icon">📱</span>Subscriptions<span class="nav-dot"></span></button>
         <button class="nav-item" onclick="goTo('split',this)"><span class="nav-icon">🍽️</span>Split Expenses<span class="nav-dot"></span></button>
+        <button class="nav-item" onclick="goTo('chit',this)"><span class="nav-icon">🎰</span>Chit Fund<span class="nav-dot"></span></button>
         <button class="nav-item" onclick="goTo('tax',this)"><span class="nav-icon">🧾</span>Tax Tracker<span class="nav-dot"></span></button>
       </div>
       <div class="nav-section">
@@ -716,6 +717,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="sec" id="sec-split">
       <div class="sh"><div class="sh-title">Split Expenses</div><button class="btn-add" onclick="openModal('splitModal')">+ Add</button></div>
       <div id="splitList"></div>
+    </div>
+
+    <!-- ══ CHIT FUND ══ -->
+    <div class="sec" id="sec-chit">
+      <div class="sh"><div class="sh-title">Chit Fund Tracker</div><button class="btn-add" onclick="openChitModal()">+ Add Chit</button></div>
+      <div id="chitTotals"></div>
+      <div id="chitList"></div>
     </div>
 
     <!-- ══ TAX ══ -->
@@ -967,6 +975,37 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
 </div>
 
+<!-- CHIT FUND MODAL -->
+<div class="overlay" id="chitModal" onclick="closeModal('chitModal')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <div class="mtitle">Add Chit Fund</div>
+    <div class="mlabel">Chit Fund Name / Organizer</div><input class="minp" id="chitName" placeholder="e.g. Al Madina Chit, Family Chit...">
+    <div class="mrow" style="margin-bottom:11px;">
+      <div><div class="mlabel">Total Chit Value</div><input class="minp" id="chitTotal" type="number" placeholder="e.g. 100000"></div>
+      <div><div class="mlabel">Monthly Contribution</div><input class="minp" id="chitMonthly" type="number" placeholder="e.g. 5000"></div>
+    </div>
+    <div class="mrow" style="margin-bottom:11px;">
+      <div><div class="mlabel">Total Members</div><input class="minp" id="chitMembers" type="number" placeholder="e.g. 20"></div>
+      <div><div class="mlabel">Your Payout Month</div><input class="minp" id="chitPayoutMonth" type="number" placeholder="e.g. 8" min="1"></div>
+    </div>
+    <div class="mlabel">Start Date</div><input class="minp" id="chitStart" type="date">
+    <div class="mlabel" style="margin-top:10px;">Status</div>
+    <div class="type-row">
+      <button class="type-btn t-inc" id="chitBtnPending" onclick="setChitStatus('pending')">⏳ Not Received Yet</button>
+      <button class="type-btn" id="chitBtnReceived" onclick="setChitStatus('received')">✅ Already Received</button>
+    </div>
+    <div id="chitReceivedFields" style="display:none;">
+      <div class="mlabel">Amount You Received</div><input class="minp" id="chitReceived" type="number" placeholder="0">
+      <div class="mlabel" style="margin-top:8px;">Month You Received It</div><input class="minp" id="chitReceivedMonth" type="number" placeholder="e.g. 5" min="1">
+    </div>
+    <div class="cur-btns" style="margin-top:10px;"><button class="cur-btn on" id="chitCurAED" onclick="setChitCur('AED')">AED</button><button class="cur-btn" id="chitCurINR" onclick="setChitCur('INR')">INR</button></div>
+    <div class="mlabel" style="margin-top:8px;">Notes (optional)</div><input class="minp" id="chitNote" placeholder="Any details...">
+    <button class="mbtn" onclick="saveChit()">Add Chit Fund</button>
+    <button class="mbtn-ghost" onclick="closeModal('chitModal')">Cancel</button>
+  </div>
+</div>
+
 <!-- FIREBASE -->
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -978,7 +1017,7 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 const prov=new GoogleAuthProvider();
 let uid=null,st=null;
-function defState(){return{txns:[],ccs:[],dcs:[],cash:{AED:0,INR:0},debts:[],assets:[],goals:[],recurs:[],investments:[],budgets:[],subscriptions:[],splits:[],nwHistory:[],cats:{income:['💼 Salary','💻 Freelance','📈 Investment','🎁 Gift','💰 Other Income'],expense:['🛒 Groceries','🍽️ Food & Dining','🚗 Transport','💡 Utilities','🏥 Health','🎓 Education','🛍️ Shopping','🎬 Entertainment','✈️ Travel','🏠 Rent','📱 Subscriptions','💳 CC Payment','📦 Other']}};}
+function defState(){return{txns:[],ccs:[],dcs:[],cash:{AED:0,INR:0},debts:[],assets:[],goals:[],recurs:[],investments:[],budgets:[],subscriptions:[],splits:[],chits:[],nwHistory:[],cats:{income:['💼 Salary','💻 Freelance','📈 Investment','🎁 Gift','💰 Other Income'],expense:['🛒 Groceries','🍽️ Food & Dining','🚗 Transport','💡 Utilities','🏥 Health','🎓 Education','🛍️ Shopping','🎬 Entertainment','✈️ Travel','🏠 Rent','📱 Subscriptions','💳 CC Payment','📦 Other']}};}
 onAuthStateChanged(auth,async u=>{
   if(u){
     uid=u.uid;
@@ -1048,7 +1087,7 @@ function calcNetWorth(){
   const cash=S.cash.AED+(S.cash.INR/INR);
   const cc=S.ccs.reduce((s,c)=>s+toA(c.bal,c.cur),0);
   const iOwe=S.debts.filter(d=>d.dir==='i_owe').reduce((s,d)=>s+toA(d.amt,d.cur),0);
-  return{net:assets+investments+debit+cash-cc-iOwe,assets,investments,debit,cash,cc,iOwe};
+  const chitVal=window.calcChitValue?window.calcChitValue():0;return{net:assets+investments+debit+cash+chitVal-cc-iOwe,assets,investments,debit,cash,cc,iOwe,chitVal};
 }
 
 function calcMonthCashFlow(){
@@ -1077,6 +1116,7 @@ function renderAll(){
   renderGoals();
   renderSubscriptions();
   renderSplits();
+  renderChits();
   renderTax();
   renderReport('daily');
 }
@@ -1833,7 +1873,7 @@ function exportPDF(){
 // ══════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════
-const pageTitles={dashboard:'Dashboard',networth:'Net Worth',transactions:'Transactions',calendar:'Calendar',budget:'Budget Planner',recurring:'Recurring',investments:'Investments',assets:'Assets',cards:'Cards & Cash',debts:'Debts',goals:'Savings Goals',subscriptions:'Subscriptions',split:'Split Expenses',tax:'Tax Tracker',reports:'Reports & PDF'};
+const pageTitles={dashboard:'Dashboard',networth:'Net Worth',transactions:'Transactions',calendar:'Calendar',budget:'Budget Planner',recurring:'Recurring',investments:'Investments',assets:'Assets',cards:'Cards & Cash',debts:'Debts',goals:'Savings Goals',subscriptions:'Subscriptions',split:'Split Expenses',tax:'Tax Tracker',chit:'Chit Fund',reports:'Reports & PDF'};
 function goTo(id,btn){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
@@ -1861,3 +1901,221 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 </script>
 </body>
 </html>
+
+<script>
+// ══════════════════════════════════
+// CHIT FUND MODULE
+// ══════════════════════════════════
+
+let chitStatus = 'pending';
+let chitCur = 'AED';
+
+function openChitModal(){
+  document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));
+  document.getElementById('chitModal').classList.add('open');
+  document.getElementById('chitStart').valueAsDate = new Date();
+  chitStatus = 'pending';
+  chitCur = 'AED';
+  document.getElementById('chitBtnPending').className = 'type-btn t-inc';
+  document.getElementById('chitBtnReceived').className = 'type-btn';
+  document.getElementById('chitReceivedFields').style.display = 'none';
+}
+
+function setChitStatus(s){
+  chitStatus = s;
+  document.getElementById('chitBtnPending').className = 'type-btn' + (s==='pending'?' t-inc':'');
+  document.getElementById('chitBtnReceived').className = 'type-btn' + (s==='received'?' t-inc':'');
+  document.getElementById('chitReceivedFields').style.display = s==='received' ? 'block' : 'none';
+}
+
+function setChitCur(c){
+  chitCur = c;
+  document.getElementById('chitCurAED').classList.toggle('on', c==='AED');
+  document.getElementById('chitCurINR').classList.toggle('on', c==='INR');
+}
+
+function saveChit(){
+  const name = document.getElementById('chitName').value.trim();
+  const total = parseFloat(document.getElementById('chitTotal').value)||0;
+  const monthly = parseFloat(document.getElementById('chitMonthly').value)||0;
+  const members = parseInt(document.getElementById('chitMembers').value)||0;
+  const payoutMonth = parseInt(document.getElementById('chitPayoutMonth').value)||0;
+  const start = document.getElementById('chitStart').value;
+  const note = document.getElementById('chitNote').value.trim();
+  const receivedAmt = parseFloat(document.getElementById('chitReceived').value)||0;
+  const receivedMonth = parseInt(document.getElementById('chitReceivedMonth').value)||0;
+  if(!name || !total || !monthly) return;
+
+  if(!window.S.chits) window.S.chits = [];
+  window.S.chits.push({
+    id: Date.now().toString(), name, total, monthly, members,
+    payoutMonth, start, cur: chitCur, note,
+    status: chitStatus,
+    receivedAmt: chitStatus==='received' ? receivedAmt : 0,
+    receivedMonth: chitStatus==='received' ? receivedMonth : 0,
+  });
+  save(); renderChits(); renderDashboard();
+  closeModal('chitModal');
+  ['chitName','chitTotal','chitMonthly','chitMembers','chitPayoutMonth','chitNote','chitReceived','chitReceivedMonth'].forEach(id=>document.getElementById(id).value='');
+}
+
+function toA(a, c){ return c==='INR' ? a/22.5 : a; }
+
+function calcChitProgress(chit){
+  if(!chit.start) return {paidMonths:0, paid:0, remaining:chit.monthly*chit.members, netGain:0};
+  const start = new Date(chit.start);
+  const now = new Date();
+  const paidMonths = Math.min(chit.members, Math.max(0,
+    (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()) + 1
+  ));
+  const paid = paidMonths * chit.monthly;
+  const remainingMonths = chit.members - paidMonths;
+  const remaining = remainingMonths * chit.monthly;
+
+  let netGain = 0;
+  if(chit.status === 'received'){
+    netGain = chit.receivedAmt - chit.total; // discount taken
+  } else if(paidMonths >= chit.payoutMonth){
+    netGain = chit.total - paid; // what you gain after getting full amount
+  }
+  return {paidMonths, paid, remaining, remainingMonths, netGain};
+}
+
+function renderChits(){
+  const S = window.S;
+  if(!S.chits) S.chits = [];
+
+  // Totals
+  const totalInvested = S.chits.reduce((s,c)=>{
+    const {paid} = calcChitProgress(c);
+    return s + toA(paid, c.cur);
+  }, 0);
+  const totalWillReceive = S.chits.filter(c=>c.status==='pending').reduce((s,c)=>s+toA(c.total,c.cur),0);
+  const totalReceived = S.chits.filter(c=>c.status==='received').reduce((s,c)=>s+toA(c.receivedAmt,c.cur),0);
+  const monthlyCommitment = S.chits.reduce((s,c)=>s+toA(c.monthly,c.cur),0);
+
+  document.getElementById('chitTotals').innerHTML = S.chits.length ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div class="card-sm"><div class="sc-label">Total Paid In</div><div class="sc-val" style="color:var(--coral)">AED ${Math.round(totalInvested).toLocaleString()}</div></div>
+      <div class="card-sm"><div class="sc-label">Monthly Commitment</div><div class="sc-val" style="color:var(--gold)">AED ${Math.round(monthlyCommitment).toLocaleString()}</div></div>
+      <div class="card-sm"><div class="sc-label">Will Receive</div><div class="sc-val" style="color:var(--teal)">AED ${Math.round(totalWillReceive).toLocaleString()}</div></div>
+      <div class="card-sm"><div class="sc-label">Already Received</div><div class="sc-val" style="color:var(--green)">AED ${Math.round(totalReceived).toLocaleString()}</div></div>
+    </div>` : '';
+
+  document.getElementById('chitList').innerHTML = S.chits.length
+    ? S.chits.map((c,i) => {
+        const {paidMonths, paid, remaining, remainingMonths, netGain} = calcChitProgress(c);
+        const pct = Math.min(100, Math.round(paidMonths / c.members * 100));
+        const isReceived = c.status === 'received';
+        const payoutPct = Math.min(100, Math.round(paidMonths / c.payoutMonth * 100));
+        const daysToPayoutMonth = c.payoutMonth > paidMonths
+          ? (c.payoutMonth - paidMonths) + ' months to your payout'
+          : isReceived ? 'Already received ✅' : 'Payout month reached!';
+
+        return `<div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:10px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:15px;font-weight:700;">🎰 ${c.name}</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px;">${c.members} members · ${c.cur} ${c.monthly.toLocaleString()}/month</div>
+            </div>
+            <span style="padding:4px 10px;border-radius:50px;font-size:11px;font-weight:700;background:${isReceived?'rgba(74,222,128,.12)':'rgba(232,184,75,.12)'};color:${isReceived?'var(--green)':'var(--gold)'};">${isReceived?'✅ Received':'⏳ Active'}</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div style="text-align:center;background:var(--s3);border-radius:var(--r);padding:10px;">
+              <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Total Value</div>
+              <div style="font-family:'DM Sans',monospace;font-size:14px;font-weight:700;color:var(--teal);">${c.cur} ${c.total.toLocaleString()}</div>
+            </div>
+            <div style="text-align:center;background:var(--s3);border-radius:var(--r);padding:10px;">
+              <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Paid So Far</div>
+              <div style="font-family:'DM Sans',monospace;font-size:14px;font-weight:700;color:var(--coral);">${c.cur} ${Math.round(paid).toLocaleString()}</div>
+            </div>
+            <div style="text-align:center;background:var(--s3);border-radius:var(--r);padding:10px;">
+              <div style="font-size:9px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">${isReceived?'Received':'Still to Pay'}</div>
+              <div style="font-family:'DM Sans',monospace;font-size:14px;font-weight:700;color:${isReceived?'var(--green)':'var(--text2)'};">${isReceived ? c.cur+' '+c.receivedAmt.toLocaleString() : c.cur+' '+Math.round(remaining).toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:12px;color:var(--text2);">Progress: ${paidMonths} of ${c.members} months</span>
+              <span style="font-size:12px;font-weight:700;color:var(--gold);">${pct}%</span>
+            </div>
+            <div style="height:6px;background:var(--border);border-radius:4px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--purple),var(--gold));border-radius:4px;transition:width .8s ease;"></div>
+            </div>
+          </div>
+
+          ${!isReceived ? `
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:12px;color:var(--text2);">Payout month: Month ${c.payoutMonth}</span>
+              <span style="font-size:12px;font-weight:700;color:var(--teal);">${daysToPayoutMonth}</span>
+            </div>
+            <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;">
+              <div style="height:100%;width:${payoutPct}%;background:var(--teal);border-radius:4px;"></div>
+            </div>
+          </div>` : ''}
+
+          ${netGain !== 0 ? `
+          <div style="background:${netGain>0?'rgba(74,222,128,.08)':'rgba(255,87,87,.08)'};border:1px solid ${netGain>0?'rgba(74,222,128,.2)':'rgba(255,87,87,.2)'};border-radius:var(--r);padding:10px;margin-bottom:8px;font-size:13px;">
+            ${netGain > 0
+              ? `💰 Net gain: <strong style="color:var(--green);">+${c.cur} ${Math.abs(Math.round(netGain)).toLocaleString()}</strong> after paying all months`
+              : `⚠️ Early withdrawal discount: <strong style="color:var(--coral);">-${c.cur} ${Math.abs(Math.round(netGain)).toLocaleString()}</strong>`}
+          </div>` : ''}
+
+          ${c.note ? `<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">📝 ${c.note}</div>` : ''}
+
+          <div style="display:flex;gap:7px;">
+            <button onclick="markChitReceived(${i})" style="flex:1;background:var(--s3);border:1px solid var(--border);color:var(--text2);padding:8px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">
+              ${isReceived ? '✅ Mark as Active' : '💰 Mark as Received'}
+            </button>
+            <button onclick="deleteChit(${i})" style="background:transparent;border:1px solid var(--border);color:var(--coral);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;">Delete</button>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="empty">
+        <div class="empty-icon">🎰</div>
+        <div class="empty-title">No chit funds added</div>
+        <div class="empty-sub">Track your chit fund contributions, payout month and returns</div>
+        <button class="btn-primary" onclick="openChitModal()" style="margin-top:8px;">+ Add Chit Fund</button>
+      </div>`;
+}
+
+function markChitReceived(i){
+  const c = window.S.chits[i];
+  if(c.status === 'received'){
+    c.status = 'pending';
+    c.receivedAmt = 0;
+    c.receivedMonth = 0;
+  } else {
+    const amt = parseFloat(prompt('How much did you receive? ('+c.cur+')', c.total))||c.total;
+    const month = parseInt(prompt('Which month number did you receive it? (1-'+c.members+')', c.payoutMonth))||c.payoutMonth;
+    c.status = 'received';
+    c.receivedAmt = amt;
+    c.receivedMonth = month;
+  }
+  save(); renderChits(); renderDashboard();
+}
+
+function deleteChit(i){
+  if(!confirm('Delete this chit fund?')) return;
+  window.S.chits.splice(i,1);
+  save(); renderChits(); renderDashboard();
+}
+
+// Add chit fund value to net worth calculation
+const _origCalcNW = window.calcNetWorth;
+window.calcChitValue = function(){
+  const S = window.S;
+  if(!S.chits) return 0;
+  return S.chits.reduce((s,c)=>{
+    if(c.status === 'received') return s; // already in assets/cash
+    const {paidMonths} = calcChitProgress(c);
+    // Value = what you will receive minus what you still need to pay
+    const willReceive = toA(c.total, c.cur);
+    const stillToPay = toA(Math.max(0,(c.members - paidMonths) * c.monthly), c.cur);
+    return s + (willReceive - stillToPay);
+  }, 0);
+};
+</script>
