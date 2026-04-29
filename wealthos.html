@@ -474,6 +474,28 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
+
+/* ══ COLOR THEMES ══ */
+[data-theme="gold"]{--gold:#e8b84b;--gold2:#f5cc6e;--teal:#00d4aa;--coral:#ff5757;--purple:#8b6dff;--bg:#05050d;--s1:#0c0c18;--s2:#111120;--s3:#181830;--border:#1e1e35;}
+[data-theme="ocean"]{--gold:#38bdf8;--gold2:#7dd3fc;--teal:#34d399;--coral:#f87171;--purple:#818cf8;--bg:#030712;--s1:#0c1220;--s2:#101828;--s3:#182030;--border:#1e2a3a;}
+[data-theme="rose"]{--gold:#fb7185;--gold2:#fda4af;--teal:#34d399;--coral:#f87171;--purple:#c084fc;--bg:#0d0508;--s1:#180c10;--s2:#201018;--s3:#281420;--border:#2a1a22;}
+[data-theme="forest"]{--gold:#4ade80;--gold2:#86efac;--teal:#2dd4bf;--coral:#fb923c;--purple:#a78bfa;--bg:#030d05;--s1:#071208;--s2:#0c1a0e;--s3:#112214;--border:#1a2e1c;}
+[data-theme="slate"]{--gold:#94a3b8;--gold2:#cbd5e1;--teal:#67e8f9;--coral:#fca5a5;--purple:#c4b5fd;--bg:#020204;--s1:#0a0a10;--s2:#10101a;--s3:#161622;--border:#1e1e2e;}
+
+.theme-switcher{
+  display:flex;gap:6px;align-items:center;padding:10px 12px;
+  border-top:1px solid var(--border);margin-top:8px;
+}
+.theme-switcher-label{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-right:4px;}
+.theme-dot{
+  width:20px;height:20px;border-radius:50%;cursor:pointer;
+  border:2px solid transparent;transition:all .2s;
+}
+.theme-dot.active{border-color:var(--text);}
+
+/* ══ NUMBER FORMAT ══ */
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum";letter-spacing:-.02em;}
+
 </style>
 </head>
 <body>
@@ -550,7 +572,15 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
     </div>
     <div class="sb-footer">
-      <button class="sb-signout" onclick="doSignOut()">Sign Out</button>
+      <div class="theme-switcher">
+  <span class="theme-switcher-label">Theme</span>
+  <div class="theme-dot active" style="background:#e8b84b;" onclick="setTheme('gold')" title="Gold"></div>
+  <div class="theme-dot" style="background:#38bdf8;" onclick="setTheme('ocean')" title="Ocean"></div>
+  <div class="theme-dot" style="background:#fb7185;" onclick="setTheme('rose')" title="Rose"></div>
+  <div class="theme-dot" style="background:#4ade80;" onclick="setTheme('forest')" title="Forest"></div>
+  <div class="theme-dot" style="background:#94a3b8;" onclick="setTheme('slate')" title="Slate"></div>
+</div>
+<button class="sb-signout" onclick="doSignOut()">Sign Out</button>
     </div>
   </div>
 
@@ -1087,7 +1117,14 @@ function calcNetWorth(){
   const cash=S.cash.AED+(S.cash.INR/INR);
   const cc=S.ccs.reduce((s,c)=>s+toA(c.bal,c.cur),0);
   const iOwe=S.debts.filter(d=>d.dir==='i_owe').reduce((s,d)=>s+toA(d.amt,d.cur),0);
-  const chitVal=window.calcChitValue?window.calcChitValue():0;return{net:assets+investments+debit+cash+chitVal-cc-iOwe,assets,investments,debit,cash,cc,iOwe,chitVal};
+  const oweMe=S.debts.filter(d=>d.dir==='owe_me').reduce((s,d)=>s+toA(d.amt,d.cur),0);
+  const chitVal=window.calcChitValue?window.calcChitValue():0;
+  const net=assets+investments+debit+cash+oweMe+chitVal-cc-iOwe;
+  return{net,assets,investments,debit,cash,cc,iOwe,oweMe,chitVal};
+}
+  const chitVal=window.calcChitValue?window.calcChitValue():0;
+  const net=assets+investments+debit+cash+oweMe+chitVal-cc-iOwe;
+  return{net,assets,investments,debit,cash,cc,iOwe,oweMe,chitVal};
 }
 
 function calcMonthCashFlow(){
@@ -1135,7 +1172,7 @@ function renderDashboard(){
     <div class="nw-stat"><div class="nw-stat-label">Inv. Returns</div><div class="nw-stat-val" style="color:var(--gold)">${fmt(cf.invRet)}/mo</div></div>
     <div class="nw-stat"><div class="nw-stat-label">Saved</div><div class="nw-stat-val" style="color:var(--green)">${fmt(cf.saved)}</div></div>`;
   document.getElementById('dashStats').innerHTML=`
-    <div class="stat-card"><div class="sc-icon">🏦</div><div class="sc-label">Total Assets</div><div class="sc-val" style="color:var(--teal)">${fmt(nw.assets+nw.investments+nw.debit+nw.cash)}</div></div>
+    <div class="stat-card"><div class="sc-icon">🏦</div><div class="sc-label">Total Assets</div><div class="sc-val" style="color:var(--teal)">${fmt(nw.assets+nw.investments+nw.debit+nw.cash+(nw.oweMe||0))}</div></div>
     <div class="stat-card"><div class="sc-icon">📈</div><div class="sc-label">Investments</div><div class="sc-val" style="color:var(--gold)">${fmt(nw.investments)}</div></div>
     <div class="stat-card"><div class="sc-icon">💳</div><div class="sc-label">Credit Debt</div><div class="sc-val" style="color:var(--coral)">${fmt(nw.cc)}</div></div>
     <div class="stat-card"><div class="sc-icon">🤝</div><div class="sc-label">I Owe</div><div class="sc-val" style="color:var(--orange)">${fmt(nw.iOwe)}</div></div>`;
@@ -1709,70 +1746,245 @@ function renderReport(period){
   const nw=calcNetWorth();
   const invTotal=S.investments.reduce((s,i)=>s+toA(i.current||i.amt,i.cur),0);
   const invInvested=S.investments.reduce((s,i)=>s+toA(i.amt,i.cur),0);
+  const invReturn=invTotal-invInvested;
+  const invMonthly=S.investments.filter(i=>i.monthly>0).reduce((s,i)=>s+toA(i.monthly,i.cur),0);
   const cats={};filtered.filter(t=>t.type==='expense').forEach(t=>{cats[t.cat]=(cats[t.cat]||0)+toA(t.amt,t.cur);});
-  const catsSorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);const catTotal=Object.values(cats).reduce((s,v)=>s+v,0);
-  const cc=['var(--coral)','var(--blue)','var(--gold)','var(--teal)','var(--purple)','var(--orange)','var(--pink)'];
+  const catsSorted=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  const catTotal=Object.values(cats).reduce((s,v)=>s+v,0);
+  const barColors=['var(--coral)','var(--blue)','var(--gold)','var(--teal)','var(--purple)','var(--orange)','var(--pink)'];
   const max=Math.max(...chartData,1);
+  const oweMe=S.debts.filter(d=>d.dir==='owe_me').reduce((s,d)=>s+toA(d.amt,d.cur),0);
+  const iOweTotal=S.debts.filter(d=>d.dir==='i_owe').reduce((s,d)=>s+toA(d.amt,d.cur),0);
+  const ccTotal=S.ccs.reduce((s,c)=>s+toA(c.bal,c.cur),0);
+  const ccLimit=S.ccs.reduce((s,c)=>s+toA(c.limit,c.cur),0);
+  const assetTotal=S.assets.reduce((s,a)=>s+toA(a.val,a.cur),0);
+  const debitTotal=S.dcs.reduce((s,d)=>s+toA(d.bal,d.cur),0);
+  const subTotal=S.subscriptions.reduce((s,sb)=>s+toA(sb.amt,sb.cur),0);
+  const goalTotal=S.goals.reduce((s,g)=>s+toA(g.target,g.cur),0);
+  const goalSaved=S.goals.reduce((s,g)=>s+toA(g.current,g.cur),0);
+  const chitMonthly=(S.chits||[]).reduce((s,c)=>s+toA(c.monthly,c.cur),0);
+
+  const rsRow=(label,val,color='var(--text)')=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:13px;color:var(--text2);">${label}</span>
+      <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${color};" class="num">${val}</span>
+    </div>`;
+  const rsTotalRow=(label,val,color='var(--gold)')=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 4px;border-top:2px solid var(--border2);margin-top:4px;">
+      <span style="font-size:14px;font-weight:800;color:var(--text);">${label}</span>
+      <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:${color};" class="num">${val}</span>
+    </div>`;
+  const rsSection=(icon,title,rows)=>`
+    <div class="report-section">
+      <div class="rs-title" style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border2);">${icon} ${title}</div>
+      ${rows}
+    </div>`;
+
   document.getElementById('reportContent').innerHTML=`
-    <div class="report-section">
-      <div class="rs-title">💎 Net Worth Summary</div>
-      <div class="grid-4" style="margin-bottom:0;">
-        <div class="stat-card card-sm"><div class="sc-label">Net Worth</div><div class="sc-val" style="color:var(--gold);font-size:18px;">${fmt(nw.net)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Total Assets</div><div class="sc-val" style="color:var(--teal);font-size:18px;">${fmt(nw.assets+nw.investments+nw.debit+nw.cash)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Total Debt</div><div class="sc-val" style="color:var(--coral);font-size:18px;">${fmt(nw.cc+nw.iOwe)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Investments</div><div class="sc-val" style="color:var(--purple);font-size:18px;">${fmt(invTotal)}</div></div>
-      </div>
-    </div>
-    <div class="report-section">
-      <div class="rs-title">💸 Income & Expenses</div>
-      <div class="grid-3" style="margin-bottom:12px;">
-        <div class="stat-card card-sm"><div class="sc-label">Income</div><div class="sc-val" style="color:var(--teal);font-size:18px;">${fmt(inc)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Expenses</div><div class="sc-val" style="color:var(--coral);font-size:18px;">${fmt(exp)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Saved</div><div class="sc-val" style="color:var(--green);font-size:18px;">${fmt(Math.max(0,inc-exp))}</div></div>
-      </div>
-      <div class="chart-area" style="margin-bottom:6px;">${chartData.map((v,i)=>`<div class="chart-col"><div class="chart-bar" style="height:${Math.round((v/max)*72)+4}px;background:${i===chartData.length-1?'var(--gold)':'var(--purple)'};opacity:${i===chartData.length-1?1:.6};"></div></div>`).join('')}</div>
+
+    ${rsSection('💎','Net Worth Breakdown',`
+      ${rsRow('Physical Assets',fmt(assetTotal),'var(--teal)')}
+      ${rsRow('Investment Portfolio',fmt(invTotal),'var(--teal)')}
+      ${rsRow('Debit Card Balances',fmt(debitTotal),'var(--teal)')}
+      ${rsRow('Cash (AED)',fmt(S.cash.AED,'AED'),'var(--teal)')}
+      ${rsRow('Cash (INR)',fmt(S.cash.INR,'INR'),'var(--teal)')}
+      ${rsRow('Money Owed To You',fmt(oweMe),'var(--teal)')}
+      ${rsRow('Chit Fund Value',fmt(nw.chitVal||0),'var(--teal)')}
+      ${rsRow('Credit Card Debt','− '+fmt(ccTotal),'var(--coral)')}
+      ${rsRow('Money You Owe Others','− '+fmt(iOweTotal),'var(--coral)')}
+      ${rsTotalRow('NET WORTH',fmt(nw.net),'var(--gold)')}
+    `)}
+
+    ${rsSection('💸',`Cash Flow — ${period.charAt(0).toUpperCase()+period.slice(1)}`,`
+      ${rsRow('Total Income',fmt(inc),'var(--teal)')}
+      ${rsRow('Total Expenses',fmt(exp),'var(--coral)')}
+      ${rsRow('Net Saved',fmt(Math.max(0,inc-exp)),'var(--green)')}
+      <div class="chart-area" style="margin:14px 0 6px;">${chartData.map((v,i)=>`<div class="chart-col"><div class="chart-bar" style="height:${Math.round((v/max)*72)+4}px;background:${i===chartData.length-1?'var(--gold)':'var(--purple)'};opacity:${i===chartData.length-1?1:.55};"></div></div>`).join('')}</div>
       <div style="display:flex;gap:4px;">${chartLabels.map(l=>`<div style="flex:1;text-align:center;font-size:9px;color:var(--muted);">${l}</div>`).join('')}</div>
-    </div>
-    <div class="report-section">
-      <div class="rs-title">📊 Spending by Category</div>
-      ${catsSorted.length?catsSorted.map(([cat,amt],i)=>`
-        <div style="margin-bottom:10px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-            <div style="font-size:13px;font-weight:600;">${cat}</div>
-            <div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${cc[i%cc.length]}">${Math.round(amt/catTotal*100)}%</span><span style="font-size:12px;color:var(--muted);">${fmt(amt)}</span></div>
-          </div>
-          <div class="mbar"><div class="mbar-fill" style="width:${Math.round(amt/catTotal*100)}%;background:${cc[i%cc.length]};"></div></div>
-        </div>`).join(''):`<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">No expense data for this period.</div>`}
-    </div>
-    <div class="report-section">
-      <div class="rs-title">📈 Investments</div>
-      <div class="grid-3" style="margin-bottom:10px;">
-        <div class="stat-card card-sm"><div class="sc-label">Total Invested</div><div class="sc-val" style="font-size:16px;">${fmt(invInvested)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Current Value</div><div class="sc-val" style="color:var(--gold);font-size:16px;">${fmt(invTotal)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Total Return</div><div class="sc-val" style="color:${invTotal-invInvested>=0?'var(--teal)':'var(--coral)'};font-size:16px;">${invTotal>=invInvested?'+':''}${fmt(invTotal-invInvested)}</div></div>
+    `)}
+
+    ${rsSection('🏷️','Spending by Category',`
+      ${catsSorted.length
+        ? catsSorted.map(([cat,amt],i)=>`
+            <div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:13px;font-weight:600;color:var(--text);">${cat}</span>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:12px;color:var(--text2);">${Math.round(amt/catTotal*100)}%</span>
+                  <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${barColors[i%barColors.length]};" class="num">${fmt(amt)}</span>
+                </div>
+              </div>
+              <div class="mbar"><div class="mbar-fill" style="width:${Math.round(amt/catTotal*100)}%;background:${barColors[i%barColors.length]};"></div></div>
+            </div>`).join('')+rsTotalRow('Total Expenses',fmt(exp),'var(--coral)')
+        : '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">No expense data for this period.</div>'
+      }
+    `)}
+
+    ${rsSection('📈','Investments',`
+      ${rsRow('Total Amount Invested',fmt(invInvested),'var(--text2)')}
+      ${rsRow('Current Portfolio Value',fmt(invTotal),'var(--teal)')}
+      ${rsRow('Total Return',`${invReturn>=0?'+':''}${fmt(Math.abs(invReturn))}`,invReturn>=0?'var(--teal)':'var(--coral)')}
+      ${rsRow('Monthly Fixed Returns',fmt(invMonthly)+'/mo','var(--gold)')}
+      <div style="margin-top:12px;">
+        ${S.investments.length
+          ? S.investments.map(inv=>{
+              const cv=toA(inv.current||inv.amt,inv.cur);
+              const iv=toA(inv.amt,inv.cur);
+              const ret=cv-iv;
+              const pct=iv>0?Math.round(ret/iv*100):0;
+              return `<div class="list-item" style="margin-bottom:6px;">
+                <div class="li-icon" style="background:rgba(232,184,75,.1);">${inv.type.split(' ')[0]}</div>
+                <div class="li-info">
+                  <div class="li-name">${inv.name}</div>
+                  <div class="li-meta">${inv.type}${inv.monthly>0?' · '+fmt(inv.monthly,inv.cur)+'/mo':''}</div>
+                </div>
+                <div class="li-right">
+                  <div class="li-val num" style="color:var(--gold);">${fmt(cv,inv.cur)}</div>
+                  <div style="font-size:11px;color:${ret>=0?'var(--teal)':'var(--coral)'};" class="num">${ret>=0?'+':''}${pct}% (${fmt(Math.abs(ret))})</div>
+                </div>
+              </div>`;}).join('')
+          : '<div style="text-align:center;padding:12px;color:var(--muted);font-size:13px;">No investments added.</div>'
+        }
       </div>
-      ${S.investments.length?S.investments.map(inv=>{const cv=toA(inv.current||inv.amt,inv.cur);const iv=toA(inv.amt,inv.cur);const ret=cv-iv;return`<div class="list-item"><div class="li-icon" style="background:rgba(232,184,75,.1);">${inv.type.split(' ')[0]}</div><div class="li-info"><div class="li-name">${inv.name}</div><div class="li-meta">${inv.type}${inv.monthly>0?' · '+fmt(inv.monthly,inv.cur)+'/mo':''}</div></div><div class="li-right"><div class="li-val" style="color:var(--gold);">${fmt(cv,inv.cur)}</div><div style="font-size:11px;color:${ret>=0?'var(--teal)':'var(--coral)'};">${ret>=0?'+':''}${fmt(Math.abs(ret))}</div></div></div>`;}).join(''):`<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">No investments added yet.</div>`}
-    </div>
-    <div class="report-section">
-      <div class="rs-title">💳 Credit Cards</div>
-      ${S.ccs.length?S.ccs.map(c=>`<div class="list-item"><div class="li-icon" style="background:rgba(139,109,255,.1);">💳</div><div class="li-info"><div class="li-name">${c.bank}</div><div class="li-meta">Due Day ${c.due} · Limit ${fmt(c.limit,c.cur)}</div></div><div class="li-right"><div class="li-val" style="color:var(--coral);">${fmt(c.bal,c.cur)}</div></div></div>`).join(''):`<div style="text-align:center;padding:12px;color:var(--muted);font-size:13px;">No credit cards.</div>`}
-    </div>
-    <div class="report-section">
-      <div class="rs-title">🤝 Debts</div>
-      <div class="grid-2">
-        <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--teal);margin-bottom:8px;">They Owe You</div>${S.debts.filter(d=>d.dir==='owe_me').length?S.debts.filter(d=>d.dir==='owe_me').map(d=>`<div class="list-item"><div class="li-icon" style="background:rgba(0,212,170,.1);">${d.name[0].toUpperCase()}</div><div class="li-info"><div class="li-name">${d.name}</div><div class="li-meta">${d.note||'No note'}</div></div><div class="li-right"><div class="li-val" style="color:var(--teal);">${fmt(d.amt,d.cur)}</div></div></div>`).join(''):`<div style="font-size:13px;color:var(--muted);padding:8px;">None</div>`}</div>
-        <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--coral);margin-bottom:8px;">You Owe Them</div>${S.debts.filter(d=>d.dir==='i_owe').length?S.debts.filter(d=>d.dir==='i_owe').map(d=>`<div class="list-item"><div class="li-icon" style="background:rgba(255,87,87,.1);">${d.name[0].toUpperCase()}</div><div class="li-info"><div class="li-name">${d.name}</div><div class="li-meta">${d.note||'No note'}</div></div><div class="li-right"><div class="li-val" style="color:var(--coral);">${fmt(d.amt,d.cur)}</div></div></div>`).join(''):`<div style="font-size:13px;color:var(--muted);padding:8px;">None</div>`}</div>
-      </div>
-    </div>
-    <div class="report-section">
-      <div class="rs-title">🏠 Assets & Cash</div>
-      <div class="grid-3">
-        <div class="stat-card card-sm"><div class="sc-label">Physical Assets</div><div class="sc-val" style="color:var(--teal);font-size:16px;">${fmt(nw.assets)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Debit Cards</div><div class="sc-val" style="color:var(--blue);font-size:16px;">${fmt(nw.debit)}</div></div>
-        <div class="stat-card card-sm"><div class="sc-label">Cash</div><div class="sc-val" style="color:var(--green);font-size:16px;">${fmt(nw.cash)}</div></div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:16px;">
+      ${rsTotalRow('Total Portfolio Value',fmt(invTotal),'var(--gold)')}
+    `)}
+
+    ${rsSection('💳','Credit Cards',`
+      ${S.ccs.length
+        ? S.ccs.map(c=>`
+            <div class="list-item" style="margin-bottom:6px;">
+              <div class="li-icon" style="background:rgba(139,109,255,.1);">💳</div>
+              <div class="li-info">
+                <div class="li-name">${c.bank}${c.num?' •••• '+c.num:''}</div>
+                <div class="li-meta">Due Day ${c.due} · Limit ${fmt(c.limit,c.cur)}</div>
+              </div>
+              <div class="li-right">
+                <div class="li-val num" style="color:var(--coral);">${fmt(c.bal,c.cur)}</div>
+                <div style="font-size:10px;color:var(--muted);">${Math.round(c.bal/c.limit*100)}% used</div>
+              </div>
+            </div>`).join('')
+        : '<div style="padding:12px;color:var(--muted);font-size:13px;text-align:center;">No credit cards added.</div>'
+      }
+      ${rsRow('Total Credit Limit',fmt(ccLimit),'var(--text2)')}
+      ${rsTotalRow('Total Amount Due',fmt(ccTotal),'var(--coral)')}
+    `)}
+
+    ${rsSection('🤝','Debts',`
+      <div style="font-size:12px;font-weight:700;color:var(--teal);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">THEY OWE YOU (Receivable)</div>
+      ${S.debts.filter(d=>d.dir==='owe_me').length
+        ? S.debts.filter(d=>d.dir==='owe_me').map(d=>`
+            <div class="list-item" style="margin-bottom:5px;">
+              <div class="li-icon" style="background:rgba(0,212,170,.1);font-weight:700;color:var(--text);font-size:14px;">${d.name[0].toUpperCase()}</div>
+              <div class="li-info"><div class="li-name">${d.name}</div><div class="li-meta">${d.note||'No note'} · ${new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div></div>
+              <div class="li-right"><div class="li-val num" style="color:var(--teal);">${fmt(d.amt,d.cur)}</div></div>
+            </div>`).join('')
+        : '<div style="padding:8px 0;color:var(--muted);font-size:13px;">Nobody owes you currently.</div>'
+      }
+      ${rsTotalRow('Total to Collect',fmt(oweMe),'var(--teal)')}
+      <div style="font-size:12px;font-weight:700;color:var(--coral);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 8px;">YOU OWE (Payable)</div>
+      ${S.debts.filter(d=>d.dir==='i_owe').length
+        ? S.debts.filter(d=>d.dir==='i_owe').map(d=>`
+            <div class="list-item" style="margin-bottom:5px;">
+              <div class="li-icon" style="background:rgba(255,87,87,.1);font-weight:700;color:var(--text);font-size:14px;">${d.name[0].toUpperCase()}</div>
+              <div class="li-info"><div class="li-name">${d.name}</div><div class="li-meta">${d.note||'No note'} · ${new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div></div>
+              <div class="li-right"><div class="li-val num" style="color:var(--coral);">${fmt(d.amt,d.cur)}</div></div>
+            </div>`).join('')
+        : '<div style="padding:8px 0;color:var(--muted);font-size:13px;">You don\'t owe anyone.</div>'
+      }
+      ${rsTotalRow('Total to Pay Back',fmt(iOweTotal),'var(--coral)')}
+    `)}
+
+    ${rsSection('🏠','Assets',`
+      ${S.assets.length
+        ? S.assets.map(a=>`
+            <div class="list-item" style="margin-bottom:5px;">
+              <div class="li-icon" style="background:rgba(232,184,75,.1);">${a.type.split(' ')[0]}</div>
+              <div class="li-info">
+                <div class="li-name">${a.name}</div>
+                <div class="li-meta">${a.type}${a.bought>0?' · Paid: '+fmt(a.bought,a.cur):''}</div>
+              </div>
+              <div class="li-right">
+                <div class="li-val num" style="color:var(--teal);">${fmt(a.val,a.cur)}</div>
+                ${a.bought>0?`<div style="font-size:10px;color:${a.val>=a.bought?'var(--teal)':'var(--coral)'};" class="num">${a.val>=a.bought?'+':(a.val-a.bought>0?'+':'')}${fmt(a.val-a.bought,a.cur)}</div>`:''}
+              </div>
+            </div>`).join('')
+        : '<div style="padding:12px;color:var(--muted);font-size:13px;text-align:center;">No assets added.</div>'
+      }
+      ${rsTotalRow('Total Asset Value',fmt(assetTotal),'var(--teal)')}
+    `)}
+
+    ${rsSection('🏦','Cards & Cash',`
+      <div style="font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">DEBIT CARDS</div>
+      ${S.dcs.length
+        ? S.dcs.map(d=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);"><span style="font-size:13px;color:var(--text2);">${d.bank}</span><span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--blue);" class="num">${fmt(d.bal,d.cur)}</span></div>`).join('')
+        : '<div style="padding:6px 0;color:var(--muted);font-size:13px;">No debit cards.</div>'
+      }
+      ${rsTotalRow('Total Debit Balance',fmt(debitTotal),'var(--blue)')}
+      <div style="font-size:12px;font-weight:700;color:var(--green);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 8px;">CASH ON HAND</div>
+      ${rsRow('AED Cash',fmt(S.cash.AED,'AED'),'var(--green)')}
+      ${rsRow('INR Cash',fmt(S.cash.INR,'INR'),'var(--green)')}
+      ${rsTotalRow('Total Cash',fmt(S.cash.AED+(S.cash.INR/INR)),'var(--green)')}
+    `)}
+
+    ${rsSection('📱','Subscriptions',`
+      ${S.subscriptions.length
+        ? S.subscriptions.map(sb=>`
+            <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);">
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);">${sb.name}</div>
+                <div style="font-size:11px;color:var(--muted);">${sb.cat} · Renews Day ${sb.day}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--coral);" class="num">${fmt(sb.amt,sb.cur)}/mo</div>
+                <div style="font-size:10px;color:var(--muted);" class="num">${fmt(sb.amt*12,sb.cur)}/yr</div>
+              </div>
+            </div>`).join('')
+        : '<div style="padding:12px;color:var(--muted);font-size:13px;text-align:center;">No subscriptions tracked.</div>'
+      }
+      ${rsRow('Annual Cost',fmt(subTotal*12),'var(--orange)')}
+      ${rsTotalRow('Monthly Total',fmt(subTotal)+'/month','var(--coral)')}
+    `)}
+
+    ${rsSection('🏆','Savings Goals',`
+      ${S.goals.length
+        ? S.goals.map(g=>{
+            const pct=Math.min(100,Math.round(g.current/g.target*100));
+            return `<div style="margin-bottom:12px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:13px;font-weight:600;color:var(--text);">🎯 ${g.name}</span>
+                <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--gold);" class="num">${pct}%</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;">
+                <span class="num">Saved: ${fmt(g.current,g.cur)}</span>
+                <span class="num">Target: ${fmt(g.target,g.cur)}</span>
+              </div>
+              <div class="mbar"><div class="mbar-fill" style="width:${pct}%;background:${pct>=100?'var(--teal)':'var(--gold)'};"></div></div>
+            </div>`;}).join('')
+        : '<div style="padding:12px;color:var(--muted);font-size:13px;text-align:center;">No savings goals set.</div>'
+      }
+      ${rsRow('Total Target',fmt(goalTotal),'var(--text2)')}
+      ${rsTotalRow('Total Saved Across Goals',fmt(goalSaved),'var(--gold)')}
+    `)}
+
+    ${rsSection('🎰','Chit Funds',`
+      ${(S.chits||[]).length
+        ? (S.chits||[]).map(c=>{
+            const paidMonths=Math.min(c.members,Math.max(0,Math.round((new Date()-new Date(c.start))/(1000*60*60*24*30))+1));
+            const paid=paidMonths*c.monthly;
+            return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;color:var(--text);">🎰 ${c.name}</div>
+              <div style="font-size:11px;color:var(--muted);">Month ${paidMonths}/${c.members} · ${c.status==='received'?'Received ✅':'Payout Month '+c.payoutMonth}</div></div>
+              <div style="text-align:right;">
+                <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--teal);" class="num">${fmt(c.total,c.cur)}</div>
+                <div style="font-size:10px;color:var(--muted);" class="num">Paid: ${fmt(paid,c.cur)}</div>
+              </div>
+            </div>`;}).join('')
+        : '<div style="padding:12px;color:var(--muted);font-size:13px;text-align:center;">No chit funds added.</div>'
+      }
+      ${rsTotalRow('Monthly Chit Commitment',fmt(chitMonthly)+'/month','var(--purple)')}
+    `)}
+
+    <div style="text-align:center;margin-top:20px;padding-bottom:20px;">
       <button class="btn-primary" onclick="exportPDF()" style="font-size:14px;padding:12px 28px;">📄 Download Full PDF Report</button>
     </div>`;
 }
@@ -1800,7 +2012,7 @@ function exportPDF(){
   doc.setFontSize(9);doc.setTextColor(136,136,170);
   doc.text('Assets + Investments + Cash + Debit - Credit Cards - Debts You Owe',15,y);y+=10;
   // Stats row
-  const stats=[['Total Assets',fmt(nw.assets+nw.investments+nw.debit+nw.cash),'0,212,170'],['Investments',fmt(nw.investments),'232,184,75'],['Credit Debt',fmt(nw.cc),'255,87,87'],['I Owe',fmt(nw.iOwe),'255,140,66']];
+  const stats=[['Total Assets',fmt(nw.assets+nw.investments+nw.debit+nw.cash+(nw.oweMe||0)),'0,212,170'],['Investments',fmt(nw.investments),'232,184,75'],['Credit Debt',fmt(nw.cc),'255,87,87'],['I Owe',fmt(nw.iOwe),'255,140,66']];
   stats.forEach((st,i)=>{
     const x=15+(i*47);doc.setFillColor(17,17,32);doc.rect(x,y,44,16,'F');
     doc.setFontSize(7);doc.setTextColor(136,136,170);doc.setFont('helvetica','normal');doc.text(st[0],x+3,y+5);
@@ -2118,4 +2330,26 @@ window.calcChitValue = function(){
     return s + (willReceive - stillToPay);
   }, 0);
 };
+</script>
+
+<script>
+// ══ THEME SWITCHER ══
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('wos_theme',t);
+  document.querySelectorAll('.theme-dot').forEach(d=>{
+    d.classList.toggle('active', d.getAttribute('onclick').includes("'"+t+"'"));
+  });
+}
+// Load saved theme on startup
+(function(){
+  const t=localStorage.getItem('wos_theme')||'gold';
+  document.documentElement.setAttribute('data-theme',t);
+  // Dots will be set after DOM loads
+  window.addEventListener('load',()=>{
+    document.querySelectorAll('.theme-dot').forEach(d=>{
+      d.classList.toggle('active', d.getAttribute('onclick').includes("'"+t+"'"));
+    });
+  });
+})();
 </script>
