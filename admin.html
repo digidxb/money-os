@@ -3,478 +3,618 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WealthOS Admin Panel</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<title>WealthOS Admin v2.5</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#05050d;--s1:#0c0c18;--s2:#111120;--s3:#181830;--border:#1e1e35;--border2:#2a2a48;--gold:#e8b84b;--teal:#00d4aa;--coral:#ff5757;--blue:#4d9fff;--purple:#8b6dff;--green:#4ade80;--orange:#ff8c42;--text:#eeeef8;--text2:#8888aa;--muted:#444466;--r:12px;--r2:18px;}
+:root{--bg:#03030a;--s1:#08080f;--s2:#0e0e18;--s3:#141420;--border:#1a1a2e;--border2:#242438;--gold:#e8b84b;--gold2:#f5cc6e;--teal:#00d4aa;--coral:#ff5757;--blue:#4d9fff;--purple:#8b6dff;--green:#4ade80;--orange:#ff8c42;--text:#eeeef8;--text2:#8888aa;--muted:#404060;--r:10px;--r2:16px;--r3:22px;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 0% 0%,rgba(139,109,255,.08),transparent 55%);pointer-events:none;z-index:0;}
-
-/* LOGIN */
-#loginScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg);flex-direction:column;gap:16px;text-align:center;padding:40px;}
-.admin-logo{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--gold);}
-.admin-sub{font-size:14px;color:var(--muted);margin-bottom:16px;}
-.google-btn{display:flex;align-items:center;gap:10px;background:#fff;color:#111;border:none;padding:14px 24px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 0% 0%,rgba(139,109,255,.06),transparent 55%);pointer-events:none;z-index:0;}
+#loginScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg);flex-direction:column;gap:14px;text-align:center;padding:40px;}
+.admin-logo{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.v-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.2);border-radius:50px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.08em;}
+.admin-sub{font-size:13px;color:var(--muted);max-width:280px;line-height:1.6;}
+.google-btn{display:flex;align-items:center;gap:10px;background:#fff;color:#111;border:none;padding:13px 24px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.4);}
 .google-btn:hover{transform:translateY(-2px);}
-.google-btn img{width:20px;height:20px;}
-#accessDenied{display:none;color:var(--coral);font-size:14px;font-weight:600;background:rgba(255,87,87,.1);border:1px solid rgba(255,87,87,.2);border-radius:var(--r);padding:12px 20px;}
-
-/* APP */
-#appScreen{display:none;padding:20px;max-width:1200px;margin:0 auto;}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
-.tl{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
-.tl span{color:var(--gold);}
-.btn-signout{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:8px 16px;border-radius:50px;cursor:pointer;font-size:13px;font-family:'Syne',sans-serif;transition:all .2s;}
-.btn-signout:hover{border-color:var(--coral);color:var(--coral);}
-
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
-@media(max-width:768px){.grid4{grid-template-columns:1fr 1fr;}.grid2{grid-template-columns:1fr;}.grid3{grid-template-columns:1fr 1fr;}}
-
-.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:18px;position:relative;overflow:hidden;}
-.card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-.stat-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
-.sc-icon{font-size:24px;margin-bottom:8px;}
-.sc-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
-.sc-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
-.sc-sub{font-size:12px;color:var(--muted);margin-top:4px;}
-
-/* TABS */
-.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
-.tab{padding:8px 16px;border-radius:50px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;font-family:'Syne',sans-serif;}
-.tab.on{background:var(--s2);border-color:var(--gold);color:var(--gold);}
-.tab-content{display:none;}
-.tab-content.on{display:block;}
-
-/* TABLE */
-.data-table{width:100%;border-collapse:collapse;}
-.data-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border2);}
-.data-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
-.data-table tr:hover td{background:var(--s2);}
-.badge{display:inline-flex;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;}
-.badge-new{background:rgba(74,222,128,.12);color:var(--green);}
-.badge-active{background:rgba(0,212,170,.12);color:var(--teal);}
-.badge-inactive{background:rgba(68,68,102,.2);color:var(--muted);}
-.stars{color:var(--gold);font-size:14px;}
-
-/* CHART */
-.chart-bar-h{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.chb-label{font-size:12px;color:var(--text2);width:120px;flex-shrink:0;}
-.chb-wrap{flex:1;height:24px;background:var(--border);border-radius:6px;overflow:hidden;}
-.chb-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;transition:width .8s ease;}
-.chb-count{font-size:12px;color:var(--muted);width:30px;text-align:right;}
-
-/* ANNOUNCE */
-.announce-form{display:flex;flex-direction:column;gap:10px;}
-.ainp{background:var(--s2);border:1.5px solid var(--border);border-radius:var(--r);padding:11px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%;transition:border-color .2s;}
-.ainp:focus{border-color:var(--gold);}
-.ainp::placeholder{color:var(--muted);}
-.abtn{background:var(--gold);color:#05050d;border:none;padding:12px 24px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;transition:all .2s;}
-.abtn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,184,75,.3);}
-.abtn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:13px;transition:all .2s;}
-.abtn-ghost:hover{border-color:var(--muted);color:var(--text);}
-
-.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
-.loading-state{text-align:center;padding:40px;}
-.spinner{width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
+.google-btn img{width:18px;height:18px;}
+#accessDenied{display:none;color:var(--coral);font-size:13px;font-weight:600;background:rgba(255,87,87,.1);border:1px solid rgba(255,87,87,.2);border-radius:var(--r);padding:10px 18px;max-width:320px;}
+#appScreen{display:none;min-height:100vh;position:relative;z-index:1;}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(3,3,10,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;}
+.tb-logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--gold);}
+.tb-ver{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;background:var(--s2);border:1px solid var(--border2);padding:3px 10px;border-radius:50px;}
+.tb-sp{flex:1;}
+.tb-last{font-size:11px;color:var(--muted);}
+.btn-tb{background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:6px 14px;border-radius:50px;cursor:pointer;font-size:12px;font-family:'Syne',sans-serif;font-weight:600;transition:all .2s;}
+.btn-tb:hover{border-color:var(--gold);color:var(--gold);}
+.btn-out{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:6px 14px;border-radius:50px;cursor:pointer;font-size:12px;font-family:'Syne',sans-serif;transition:all .2s;}
+.btn-out:hover{border-color:var(--coral);color:var(--coral);}
+.tb-av{width:28px;height:28px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;}
+.body{padding:20px;max-width:1280px;margin:0 auto;}
+.rev-card{background:linear-gradient(135deg,rgba(232,184,75,.12),rgba(139,109,255,.08));border:1px solid rgba(232,184,75,.2);border-radius:var(--r2);padding:20px;margin-bottom:18px;}
+.rev-label{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.rev-val{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:var(--gold);margin-bottom:6px;}
+.rev-row{display:flex;gap:20px;flex-wrap:wrap;}
+.rev-item{font-size:13px;color:var(--text2);}
+.rev-item strong{color:var(--gold);}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:900px){.sg{grid-template-columns:1fr 1fr;}}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:16px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:.1;}
+.sc.g::before{background:var(--gold);}
+.sc.t::before{background:var(--teal);}
+.sc.c::before{background:var(--coral);}
+.sc.p::before{background:var(--purple);}
+.sc.b::before{background:var(--blue);}
+.sc.gr::before{background:var(--green);}
+.sc-ic{font-size:20px;margin-bottom:7px;}
+.sc-lb{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px;}
+.sc-v{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;}
+.sc-s{font-size:11px;color:var(--muted);margin-top:4px;}
+.tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:0;}
+.tab{padding:9px 16px;border-radius:var(--r) var(--r) 0 0;border:1px solid transparent;border-bottom:none;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;position:relative;bottom:-1px;white-space:nowrap;}
+.tab.on{background:var(--s1);border-color:var(--border);color:var(--text);border-bottom-color:var(--s1);}
+.tc{display:none;animation:fu .3s ease both;}
+.tc.on{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:16px;margin-bottom:12px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.ct{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.ca{background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:4px 11px;border-radius:50px;cursor:pointer;font-size:11px;font-weight:700;transition:all .2s;}
+.ca:hover{border-color:var(--gold);color:var(--gold);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+@media(max-width:768px){.g2{grid-template-columns:1fr;}.g3{grid-template-columns:1fr 1fr;}}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:9px 11px;border-bottom:1px solid var(--border2);white-space:nowrap;}
+td{padding:10px 11px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:var(--s2);}
+tr:last-child td{border-bottom:none;}
+.bh{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.bhl{font-size:12px;color:var(--text2);width:110px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bhw{flex:1;height:22px;background:var(--s3);border-radius:5px;overflow:hidden;}
+.bhf{height:100%;border-radius:5px;display:flex;align-items:center;padding:0 7px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;min-width:4px;transition:width .8s ease;}
+.bhn{font-size:11px;color:var(--muted);width:24px;text-align:right;flex-shrink:0;}
+.cv{display:flex;align-items:flex-end;gap:3px;height:80px;}
+.cvc{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cvb{width:100%;border-radius:3px 3px 0 0;min-height:4px;transition:height .8s ease;}
+.cvl{font-size:8px;color:var(--muted);}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:50px;font-size:10px;font-weight:700;}
+.b-new{background:rgba(74,222,128,.12);color:var(--green);}
+.b-active{background:rgba(0,212,170,.12);color:var(--teal);}
+.b-inactive{background:rgba(64,64,96,.3);color:var(--muted);}
+.b-vip{background:rgba(232,184,75,.15);color:var(--gold);}
+.b-ver{background:rgba(139,109,255,.12);color:var(--purple);}
+.uc{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
+.uc:hover{border-color:var(--border2);}
+.uc.vip{border-color:rgba(232,184,75,.3);}
+.uc-top{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
+.uav{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);flex-shrink:0;}
+.uap{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;flex-shrink:0;}
+.un{font-weight:700;font-size:13px;}
+.ue{font-size:11px;color:var(--muted);margin-top:2px;}
+.ubs{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
+.ust{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.us{background:var(--s3);border-radius:7px;padding:7px;text-align:center;}
+.usl{font-size:9px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px;}
+.usv{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;}
+.un2{font-size:11px;color:var(--text2);background:var(--s3);border-radius:7px;padding:7px 9px;margin-top:7px;border-left:3px solid var(--gold);}
+.sb{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--border2);border-radius:50px;padding:7px 14px;margin-bottom:12px;}
+.sb input{flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.sb input::placeholder{color:var(--muted);}
+.fc{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:7px;}
+.fc-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;}
+.fcu{font-weight:600;font-size:13px;}
+.fce{font-size:11px;color:var(--muted);margin-top:2px;}
+.fcs{font-size:13px;color:var(--gold);}
+.fcd{font-size:10px;color:var(--muted);margin-top:2px;}
+.fct{font-size:12px;color:var(--text2);background:var(--s3);border-radius:7px;padding:7px 9px;margin-bottom:5px;line-height:1.5;}
+.fcf{font-size:12px;color:var(--purple);background:rgba(139,109,255,.08);border-radius:7px;padding:5px 9px;margin-bottom:4px;}
+.fcb{font-size:12px;color:var(--coral);background:rgba(255,87,87,.08);border-radius:7px;padding:5px 9px;}
+.fi{width:100%;background:var(--s2);border:1.5px solid var(--border2);border-radius:var(--r);padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.fi:focus{border-color:var(--gold);}
+.fi::placeholder{color:var(--muted);}
+textarea.fi{resize:vertical;min-height:70px;}
+select.fi{cursor:pointer;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:9px 18px;border-radius:50px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;transition:all .2s;}
+.btn-g{background:var(--gold);color:#03030a;}
+.btn-g:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(232,184,75,.3);}
+.btn-gh{background:var(--s2);border:1px solid var(--border2);color:var(--text2);}
+.btn-gh:hover{border-color:var(--gold);color:var(--gold);}
+.btn-c{background:rgba(255,87,87,.1);border:1px solid rgba(255,87,87,.2);color:var(--coral);}
+.btn-t{background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.2);color:var(--teal);}
+.btn-sm{padding:5px 12px;font-size:11px;}
+.btn-fw{width:100%;justify-content:center;}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.ov.open{display:flex;}
+.ob{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r3);padding:22px;width:100%;max-width:440px;max-height:80vh;overflow-y:auto;position:relative;}
+.mt{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:14px;}
+.mc{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:18px;}
+.empty{text-align:center;padding:36px 20px;color:var(--muted);}
+.ei{font-size:34px;margin-bottom:8px;}
+.et{font-size:13px;line-height:1.6;}
+.loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:36px;}
+.spinner{width:30px;height:30px;border:3px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{animation:fadeUp .4s ease both;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+@media(max-width:600px){.topbar{padding:0 12px;gap:8px;}.body{padding:12px;}.sg{grid-template-columns:1fr 1fr;}.ust{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginScreen">
   <div class="admin-logo">🔒 WealthOS Admin</div>
-  <div class="admin-sub">Restricted access — authorized personnel only</div>
+  <div class="v-badge">v2.5.0 · May 2025</div>
+  <div class="admin-sub">Restricted access — authorized accounts only</div>
   <button class="google-btn" onclick="adminLogin()">
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
     Sign in with Google
   </button>
-  <div id="accessDenied">⛔ Access denied. This panel is restricted to admin accounts only.</div>
+  <div id="accessDenied">⛔ Access denied. Admin only.</div>
 </div>
 
-<!-- APP -->
 <div id="appScreen">
   <div class="topbar">
-    <div class="tl">WealthOS <span>Admin</span></div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div style="font-size:13px;color:var(--muted);" id="lastRefresh"></div>
-      <button onclick="loadAllData()" style="background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:8px 14px;border-radius:50px;cursor:pointer;font-size:12px;font-family:'Syne',sans-serif;font-weight:600;">↻ Refresh</button>
-      <button class="btn-signout" onclick="adminSignOut()">Sign Out</button>
-    </div>
+    <div class="tb-logo">WealthOS</div>
+    <div class="tb-ver">Admin v2.5.0</div>
+    <div class="tb-sp"></div>
+    <div class="tb-last" id="lastUp">—</div>
+    <button class="btn-tb" onclick="loadAll()">↻ Refresh</button>
+    <button class="btn-tb" onclick="exportAllCSV()">⬇ Export All</button>
+    <img class="tb-av" id="adAv" src="" alt="">
+    <span style="font-size:13px;font-weight:600;color:var(--text2);" id="adNm"></span>
+    <button class="btn-out" onclick="adminOut()">Sign Out</button>
   </div>
 
-  <!-- STATS -->
-  <div class="grid4 fade-up" id="statsGrid">
-    <div class="stat-card"><div class="sc-icon">👥</div><div class="sc-label">Total Users</div><div class="sc-val" id="statTotal">—</div></div>
-    <div class="stat-card"><div class="sc-icon">🆕</div><div class="sc-label">New Today</div><div class="sc-val" id="statToday">—</div></div>
-    <div class="stat-card"><div class="sc-icon">⚡</div><div class="sc-label">Active This Week</div><div class="sc-val" id="statWeek">—</div></div>
-    <div class="stat-card"><div class="sc-icon">⭐</div><div class="sc-label">Avg Rating</div><div class="sc-val" id="statRating">—</div></div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab on" onclick="showTab('users',this)">👥 Users</button>
-    <button class="tab" onclick="showTab('analytics',this)">📊 Analytics</button>
-    <button class="tab" onclick="showTab('feedback',this)">💬 Feedback</button>
-    <button class="tab" onclick="showTab('announce',this)">📢 Announcements</button>
-    <button class="tab" onclick="showTab('features',this)">🚀 Feature Requests</button>
-    <button class="tab" onclick="showTab('bugs',this)">🐛 Bug Reports</button>
-  </div>
-
-  <!-- USERS TAB -->
-  <div class="tab-content on" id="tab-users">
-    <div class="card">
-      <div class="card-title">👥 All Users</div>
-      <div id="usersLoading" class="loading-state"><div class="spinner"></div><div style="color:var(--muted);font-size:13px;">Loading users...</div></div>
-      <div id="usersTable" style="overflow-x:auto;display:none;"></div>
-    </div>
-  </div>
-
-  <!-- ANALYTICS TAB -->
-  <div class="tab-content" id="tab-analytics">
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">📱 Device Breakdown</div>
-        <div id="deviceChart"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">🌍 Top Regions</div>
-        <div id="regionChart"></div>
+  <div class="body">
+    <div class="rev-card">
+      <div class="rev-label">Revenue Potential</div>
+      <div class="rev-val" id="revV">$0/mo</div>
+      <div class="rev-row">
+        <div class="rev-item">$5/mo: <strong id="r5">$0</strong></div>
+        <div class="rev-item">$8/mo: <strong id="r8">$0</strong></div>
+        <div class="rev-item">$12/mo: <strong id="r12">$0</strong></div>
+        <div class="rev-item">Annual: <strong id="rA" style="color:var(--teal);">$0</strong></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">⏱️ Average Session Time</div>
-      <div id="sessionStats"></div>
-    </div>
-    <div class="card" style="margin-top:16px;">
-      <div class="card-title">📈 User Growth (Last 30 Days)</div>
-      <div id="growthChart"></div>
-    </div>
-  </div>
 
-  <!-- FEEDBACK TAB -->
-  <div class="tab-content" id="tab-feedback">
-    <div class="card">
-      <div class="card-title">⭐ User Ratings & Feedback</div>
-      <div id="feedbackList"></div>
+    <div class="sg">
+      <div class="sc g"><div class="sc-ic">👥</div><div class="sc-lb">Total Users</div><div class="sc-v" id="s1">—</div><div class="sc-s" id="s1s"></div></div>
+      <div class="sc t"><div class="sc-ic">🆕</div><div class="sc-lb">New Today</div><div class="sc-v" id="s2">—</div><div class="sc-s" id="s2s"></div></div>
+      <div class="sc gr"><div class="sc-ic">⚡</div><div class="sc-lb">Active (7 days)</div><div class="sc-v" id="s3">—</div><div class="sc-s" id="s3s"></div></div>
+      <div class="sc c"><div class="sc-ic">😴</div><div class="sc-lb">Inactive 7+ Days</div><div class="sc-v" id="s4">—</div><div class="sc-s">Need re-engagement</div></div>
+      <div class="sc p"><div class="sc-ic">⭐</div><div class="sc-lb">Avg Rating</div><div class="sc-v" id="s5">—</div><div class="sc-s" id="s5s"></div></div>
+      <div class="sc b"><div class="sc-ic">⏱️</div><div class="sc-lb">Avg Session</div><div class="sc-v" id="s6">—</div><div class="sc-s">minutes</div></div>
+      <div class="sc g"><div class="sc-ic">💬</div><div class="sc-lb">Feedback</div><div class="sc-v" id="s7">—</div><div class="sc-s" id="s7s"></div></div>
+      <div class="sc t"><div class="sc-ic">🚀</div><div class="sc-lb">Feature Requests</div><div class="sc-v" id="s8">—</div><div class="sc-s" id="s8s"></div></div>
     </div>
-  </div>
 
-  <!-- ANNOUNCEMENTS TAB -->
-  <div class="tab-content" id="tab-announce">
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">📢 Post New Announcement</div>
-        <div class="announce-form">
-          <div>
-            <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">TITLE</div>
-            <input class="ainp" id="annTitle" placeholder="e.g. New Feature Added!">
-          </div>
-          <div>
-            <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">MESSAGE</div>
-            <textarea class="ainp" id="annBody" style="resize:vertical;min-height:80px;" placeholder="Describe the update or announcement..."></textarea>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="abtn" onclick="postAnnouncement()">📢 Post to All Users</button>
-            <button class="abtn-ghost" onclick="document.getElementById('annTitle').value='';document.getElementById('annBody').value='';">Clear</button>
+    <div class="tabs">
+      <button class="tab on" onclick="ST('users',this)">👥 Users</button>
+      <button class="tab" onclick="ST('analytics',this)">📊 Analytics</button>
+      <button class="tab" onclick="ST('feedback',this)">💬 Feedback</button>
+      <button class="tab" onclick="ST('features',this)">🚀 Features</button>
+      <button class="tab" onclick="ST('bugs',this)">🐛 Bugs</button>
+      <button class="tab" onclick="ST('announce',this)">📢 Announce</button>
+      <button class="tab" onclick="ST('versions',this)">🏷️ Versions</button>
+    </div>
+
+    <!-- USERS -->
+    <div class="tc on" id="tc-users">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <div class="sb" style="flex:1;min-width:200px;"><span style="color:var(--muted);">🔍</span><input id="usrSrch" placeholder="Search name or email..." oninput="filterU()"></div>
+        <select class="fi" id="usrFilt" onchange="filterU()" style="width:150px;border-radius:50px;padding:7px 14px;">
+          <option value="all">All Users</option>
+          <option value="new">New (7 days)</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="vip">VIP ⭐</option>
+          <option value="feedback">Gave Feedback</option>
+        </select>
+        <button class="btn btn-gh btn-sm" onclick="exportUsersCSV()">⬇ Users CSV</button>
+      </div>
+      <div id="usrList"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="tc" id="tc-analytics">
+      <div class="g2">
+        <div class="card"><div class="ch"><div class="ct">📈 Growth (30 days)</div></div><div class="cv" id="gChart"></div><div id="gLabels" style="display:flex;gap:3px;margin-top:5px;"></div></div>
+        <div class="card"><div class="ch"><div class="ct">⏰ Peak Hours</div></div><div id="hChart"></div></div>
+      </div>
+      <div class="g3">
+        <div class="card"><div class="ch"><div class="ct">📱 Devices</div></div><div id="dChart"></div></div>
+        <div class="card"><div class="ch"><div class="ct">🌍 Regions</div></div><div id="rChart"></div></div>
+        <div class="card"><div class="ch"><div class="ct">🏷️ App Versions</div></div><div id="vChart"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ch"><div class="ct">💱 Top Currencies</div></div><div id="cChart"></div></div>
+        <div class="card"><div class="ch"><div class="ct">🎛️ Popular Modules</div></div><div id="mChart"></div></div>
+      </div>
+      <div class="card"><div class="ch"><div class="ct">🏆 Top 5 Most Active Users</div></div><div id="top5" style="overflow-x:auto;"></div></div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="tc" id="tc-feedback">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <select class="fi" id="fbFilt" onchange="renderFB()" style="width:180px;border-radius:50px;padding:7px 14px;">
+          <option value="all">All Feedback</option>
+          <option value="5">5 Stars ⭐⭐⭐⭐⭐</option>
+          <option value="4">4 Stars</option>
+          <option value="low">3 Stars & Below</option>
+        </select>
+        <button class="btn btn-gh btn-sm" onclick="exportFeedbackCSV()">⬇ Export CSV</button>
+      </div>
+      <div id="fbList"></div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="tc" id="tc-features">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:13px;color:var(--text2);">Most requested = build first 🚀</div>
+        <button class="btn btn-gh btn-sm" onclick="exportFeaturesCSV()">⬇ Export CSV</button>
+      </div>
+      <div id="ftList"></div>
+    </div>
+
+    <!-- BUGS -->
+    <div class="tc" id="tc-bugs">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:13px;color:var(--text2);">Fix most reported bugs first 🐛</div>
+        <button class="btn btn-gh btn-sm" onclick="exportBugsCSV()">⬇ Export CSV</button>
+      </div>
+      <div id="bgList"></div>
+    </div>
+
+    <!-- ANNOUNCE -->
+    <div class="tc" id="tc-announce">
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">📢 New Announcement</div></div>
+          <div style="margin-bottom:10px;"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">TITLE</div><input class="fi" id="anT" placeholder="e.g. New Feature Added!"></div>
+          <div style="margin-bottom:10px;"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">MESSAGE</div><textarea class="fi" id="anB" placeholder="Describe the update..."></textarea></div>
+          <div style="margin-bottom:14px;"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">TYPE</div>
+          <select class="fi" id="anType"><option value="update">🆕 New Feature</option><option value="fix">🐛 Bug Fix</option><option value="announcement">📢 Announcement</option><option value="maintenance">⚙️ Maintenance</option></select></div>
+          <button class="btn btn-g btn-fw" onclick="postAnn()">📢 Post to All Users</button>
+        </div>
+        <div class="card"><div class="ch"><div class="ct">📋 Posted</div><button class="ca" onclick="clearAnns()">Clear All</button></div><div id="anList"></div></div>
+      </div>
+    </div>
+
+    <!-- VERSIONS -->
+    <div class="tc" id="tc-versions">
+      <div class="g2">
+        <div class="card">
+          <div class="ch"><div class="ct">🏷️ Version History</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="background:var(--s2);border:1px solid rgba(232,184,75,.2);border-radius:var(--r);padding:13px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--gold);">v2.5.0</span><span class="badge b-new">Latest</span></div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Onboarding, multi-currency (13), modular modules, Settings, live rates, WhatsApp reminders, Zakat, Future Planner, Monthly Planner, Feedback</div><div style="font-size:10px;color:var(--muted);margin-top:5px;">May 2025</div></div>
+            <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:13px;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:5px;">v2.4.0</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Full color themes, Admin panel, notifications, announcements, chit fund, net worth formula fixed</div><div style="font-size:10px;color:var(--muted);margin-top:5px;">May 2025</div></div>
+            <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:13px;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:5px;">v2.3.0</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Calendar, Firebase sync, Google login, PDF export, reports rebuild, investment returns in net worth</div><div style="font-size:10px;color:var(--muted);margin-top:5px;">April 2025</div></div>
+            <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:13px;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:5px;">v2.0.0</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Complete rebuild as WealthOS — 14 modules, AED+INR, all financial tracking</div><div style="font-size:10px;color:var(--muted);margin-top:5px;">April 2025</div></div>
+            <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:13px;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;margin-bottom:5px;">v1.0.0</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Initial launch — basic income/expense tracker</div><div style="font-size:10px;color:var(--muted);margin-top:5px;">March 2025</div></div>
           </div>
         </div>
+        <div class="card">
+          <div class="ch"><div class="ct">📊 Users by Version</div></div>
+          <div id="verUsrs"></div>
+          <div style="margin-top:14px;"><div class="ch" style="margin-bottom:10px;padding-bottom:8px;"><div class="ct">🗺️ Roadmap</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:var(--r);padding:10px 12px;"><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--green);margin-bottom:3px;">v2.6.0 — Coming Next</div><div style="font-size:12px;color:var(--text2);">Arabic language, Habits module, Travel planner, Business hub</div></div>
+            <div style="background:rgba(77,159,255,.08);border:1px solid rgba(77,159,255,.2);border-radius:var(--r);padding:10px 12px;"><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:3px;">v3.0.0 — Real App</div><div style="font-size:12px;color:var(--text2);">React Native — iOS & Android app</div></div>
+          </div></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">📋 Previous Announcements</div>
-        <div id="announceHistory"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FEATURE REQUESTS TAB -->
-  <div class="tab-content" id="tab-features">
-    <div class="card">
-      <div class="card-title">🚀 Feature Requests from Users</div>
-      <div id="featureList"></div>
-    </div>
-  </div>
-
-  <!-- BUG REPORTS TAB -->
-  <div class="tab-content" id="tab-bugs">
-    <div class="card">
-      <div class="card-title">🐛 Bug Reports</div>
-      <div id="bugList"></div>
     </div>
   </div>
 </div>
 
-<!-- FIREBASE -->
+<!-- USER MODAL -->
+<div class="ov" id="uMod" onclick="closeUM()">
+  <div class="ob" onclick="event.stopPropagation()">
+    <button class="mc" onclick="closeUM()">×</button>
+    <div class="mt" id="umName">User</div>
+    <div id="umContent"></div>
+  </div>
+</div>
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut as fbOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,collection,getDocs,doc,setDoc,getDoc,query,orderBy,limit}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+import{getFirestore,collection,getDocs,doc,setDoc,getDoc,updateDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyDBR27thvE2M_viPJqImzyRNysKlpgnvgQ",authDomain:"money-os-2e871.firebaseapp.com",projectId:"money-os-2e871",storageBucket:"money-os-2e871.firebasestorage.app",messagingSenderId:"1024122836266",appId:"1:1024122836266:web:9464e546bd06e19d30ba53"};
 const app=initializeApp(cfg);
 const auth=getAuth(app);
 const db=getFirestore(app);
 const prov=new GoogleAuthProvider();
-
-// ADMIN EMAILS - add your email here
-const ADMIN_EMAILS=['faizal@digidxb.com','digidxb@gmail.com'];
-
-let allUsers=[], allFeedback=[], allAnnouncements=[];
-
-onAuthStateChanged(auth,async user=>{
-  if(user){
-    if(!ADMIN_EMAILS.includes(user.email)){
-      document.getElementById('accessDenied').style.display='block';
-      await fbOut(auth);
-      return;
-    }
+const ADMINS=['faizal@digidxb.com','digidxb@gmail.com'];
+let AU=[],AF=[],AA=[];
+onAuthStateChanged(auth,async u=>{
+  if(u){
+    if(!ADMINS.includes(u.email)){document.getElementById('accessDenied').style.display='block';await fbOut(auth);return;}
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('appScreen').style.display='block';
-    await loadAllData();
+    document.getElementById('adAv').src=u.photoURL||'';
+    document.getElementById('adNm').textContent=u.displayName?.split(' ')[0]||'Admin';
+    await loadAll();
   }
 });
-
-window.adminLogin=async()=>{
-  try{await signInWithPopup(auth,prov);}
-  catch(e){alert('Login failed: '+e.message);}
+window.adminLogin=async()=>{try{await signInWithPopup(auth,prov);}catch(e){document.getElementById('accessDenied').style.display='block';document.getElementById('accessDenied').textContent='❌ '+e.message;}};
+window.adminOut=async()=>{if(confirm('Sign out?')){await fbOut(auth);window.location.reload();}};
+window.loadAll=async()=>{
+  document.getElementById('lastUp').textContent='Loading...';
+  try{
+    const us=await getDocs(collection(db,'admin_users'));
+    AU=us.docs.map(d=>({id:d.id,...d.data()}));
+    const ds=await getDocs(collection(db,'users'));
+    const dm={};ds.docs.forEach(d=>{dm[d.id]=d.data();});
+    AU.forEach(u=>{u.appData=dm[u.id]||{};});
+    AF=[];
+    AU.forEach(u=>{
+      [...(u.feedbacks||[]),...(u.appData?.feedback||[])].forEach(f=>{
+        AF.push({...f,userName:u.name||'Anonymous',userEmail:u.email||'',userId:u.id});
+      });
+    });
+    const seen=new Set();AF=AF.filter(f=>{const k=f.id||f.date+f.text;if(seen.has(k))return false;seen.add(k);return true;});
+    AF.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const as=await getDoc(doc(db,'admin_announcements','latest'));
+    AA=as.exists()?(as.data().items||[]):[];
+    window.AU=AU;window.AF=AF;window.AA=AA;
+    renderAll();
+    document.getElementById('lastUp').textContent='Updated: '+new Date().toLocaleTimeString();
+  }catch(e){console.error(e);document.getElementById('lastUp').textContent='Error: '+e.message;}
 };
-window.adminSignOut=async()=>{if(confirm('Sign out?'))await fbOut(auth);window.location.reload();};
-
-window.loadAllData=async()=>{
-  document.getElementById('lastRefresh').textContent='Loading...';
-  await Promise.all([loadUsers(),loadFeedback(),loadAnnouncements()]);
-  document.getElementById('lastRefresh').textContent='Updated: '+new Date().toLocaleTimeString();
+window.updateUF=async(uid,f,v)=>{try{await updateDoc(doc(db,'admin_users',uid),{[f]:v});const u=AU.find(x=>x.id===uid);if(u)u[f]=v;}catch(e){console.error(e);}};
+window.postAnn=async()=>{
+  const t=document.getElementById('anT').value.trim();const b=document.getElementById('anB').value.trim();const tp=document.getElementById('anType').value;
+  if(!t||!b){alert('Fill title and message.');return;}
+  const a={id:Date.now().toString(),title:t,body:b,type:tp,date:new Date().toISOString()};
+  AA.unshift(a);
+  await setDoc(doc(db,'admin_announcements','latest'),{items:AA.slice(0,30)});
+  renderAnns();document.getElementById('anT').value='';document.getElementById('anB').value='';
+  alert('✅ Posted to all users!');
 };
+window.clearAnns=async()=>{if(!confirm('Clear all?'))return;AA=[];await setDoc(doc(db,'admin_announcements','latest'),{items:[]});renderAnns();};
+window.delAnn=async(i)=>{AA.splice(i,1);await setDoc(doc(db,'admin_announcements','latest'),{items:AA});renderAnns();};
+window.saveNote=async(uid)=>{const n=document.getElementById('noteInp').value.trim();await window.updateUF(uid,'adminNote',n);const u=AU.find(x=>x.id===uid);if(u)u.adminNote=n;filterU();alert('✅ Note saved');};
+window.toggleVIP=async(uid)=>{const u=AU.find(x=>x.id===uid);if(!u)return;const v=!u.isVip;await window.updateUF(uid,'isVip',v);u.isVip=v;filterU();closeUM();alert(v?'⭐ VIP marked':'VIP removed');};
+</script>
 
-async function loadUsers(){
-  try{
-    const snap=await getDocs(collection(db,'admin_users'));
-    allUsers=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderUserStats();
-    renderUsersTable();
-    renderAnalytics();
-  }catch(e){console.error('Load users error:',e);}
+<script>
+let filtU=[];
+function renderAll(){renderStats();renderUsers();renderAnalytics();renderFB();renderFeatures();renderBugs();renderAnns();renderVerStats();}
+function AC(arr){return arr.filter(Boolean);}
+function tAgo(d){const m=Math.floor((Date.now()-d)/60000);const h=Math.floor(m/60);const dy=Math.floor(h/24);if(m<1)return'Just now';if(m<60)return m+'m ago';if(h<24)return h+'h ago';if(dy<7)return dy+'d ago';return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+function aC(n){const c=['#2a1a6a','#0a3a1a','#3a0a1a','#0a1a3a','#2a100a','#1a2a0a'];return c[n.charCodeAt(0)%c.length];}
+
+function renderStats(){
+  const AU=window.AU||[],AF=window.AF||[];
+  const now=new Date(),wd=new Date(now-7*24*60*60*1000);
+  const tot=AU.length,nt=AU.filter(u=>u.joinDate&&new Date(u.joinDate).toDateString()===now.toDateString()).length;
+  const nw=AU.filter(u=>u.joinDate&&new Date(u.joinDate)>wd).length;
+  const aw=AU.filter(u=>u.lastActive&&new Date(u.lastActive)>wd).length;
+  const ia=AU.filter(u=>!u.lastActive||new Date(u.lastActive)<wd).length;
+  const rats=AF.filter(f=>f.rating>0).map(f=>f.rating);
+  const ar=rats.length?(rats.reduce((s,r)=>s+r,0)/rats.length).toFixed(1):'—';
+  const sess=AU.filter(u=>u.totalMinutes>0);
+  const as=sess.length?Math.round(sess.reduce((s,u)=>s+(u.totalMinutes||0),0)/sess.length):0;
+  document.getElementById('s1').textContent=tot;document.getElementById('s1s').textContent='+'+nw+' this week';
+  document.getElementById('s2').textContent=nt;document.getElementById('s2s').textContent=nw+' this week';
+  document.getElementById('s3').textContent=aw;document.getElementById('s3s').textContent=tot>0?Math.round(aw/tot*100)+'% of users':'';
+  document.getElementById('s4').textContent=ia;
+  document.getElementById('s5').textContent=ar+(ar!=='—'?'⭐':'');document.getElementById('s5s').textContent=rats.length+' ratings';
+  document.getElementById('s6').textContent=as+'m';
+  document.getElementById('s7').textContent=AF.length;document.getElementById('s7s').textContent=rats.length+' with ratings';
+  document.getElementById('s8').textContent=AF.filter(f=>f.feature).length;document.getElementById('s8s').textContent=AF.filter(f=>f.bug).length+' bug reports';
+  document.getElementById('revV').textContent='$'+Math.round(tot*5).toLocaleString()+'/mo';
+  document.getElementById('r5').textContent='$'+Math.round(tot*5).toLocaleString();
+  document.getElementById('r8').textContent='$'+Math.round(tot*8).toLocaleString();
+  document.getElementById('r12').textContent='$'+Math.round(tot*12).toLocaleString();
+  document.getElementById('rA').textContent='$'+Math.round(tot*5*12).toLocaleString();
 }
 
-async function loadFeedback(){
-  try{
-    allFeedback=[];
-    // Get feedback from all users
-    for(const user of allUsers){
-      if(user.feedbacks&&user.feedbacks.length){
-        user.feedbacks.forEach(f=>{
-          allFeedback.push({...f,userName:user.name,userEmail:user.email});
-        });
-      }
-    }
-    allFeedback.sort((a,b)=>new Date(b.date)-new Date(a.date));
-    renderFeedback();
-  }catch(e){console.error(e);}
+function renderUsers(){filtU=[...(window.AU||[])];filterU();}
+function filterU(){
+  const AU=window.AU||[];
+  const s=document.getElementById('usrSrch')?.value?.toLowerCase()||'';
+  const f=document.getElementById('usrFilt')?.value||'all';
+  const wd=new Date(Date.now()-7*24*60*60*1000);
+  filtU=AU.filter(u=>{
+    const ms=!s||(u.name||'').toLowerCase().includes(s)||(u.email||'').toLowerCase().includes(s);
+    let mf=true;
+    if(f==='new')mf=u.joinDate&&new Date(u.joinDate)>wd;
+    else if(f==='active')mf=u.lastActive&&new Date(u.lastActive)>wd;
+    else if(f==='inactive')mf=!u.lastActive||new Date(u.lastActive)<wd;
+    else if(f==='vip')mf=u.isVip;
+    else if(f==='feedback')mf=(u.feedbacks||[]).length>0||(u.appData?.feedback||[]).length>0;
+    return ms&&mf;
+  });
+  const el=document.getElementById('usrList');
+  if(!filtU.length){el.innerHTML='<div class="empty"><div class="ei">👥</div><div class="et">No users found</div></div>';return;}
+  const sorted=[...filtU].sort((a,b)=>new Date(b.lastActive||0)-new Date(a.lastActive||0));
+  el.innerHTML=sorted.map(u=>{
+    const wd2=new Date(Date.now()-7*24*60*60*1000);
+    const ia=u.lastActive&&new Date(u.lastActive)>wd2;
+    const iN=u.joinDate&&new Date(u.joinDate)>wd2;
+    const j=u.joinDate?new Date(u.joinDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'?';
+    const ls=u.lastActive?tAgo(new Date(u.lastActive)):'Never';
+    const mods=(u.appData?.activeModules||[]).length;
+    const cur=u.appData?.currencies?.primary||'—';
+    const ver=u.appVersion||'v2.4';
+    return `<div class="uc ${u.isVip?'vip':''}" onclick="openUM('${u.id}')">
+      <div class="uc-top">
+        ${u.avatar?`<img class="uav" src="${u.avatar}" alt="">`:`<div class="uap" style="background:${aC(u.name||'?')}">${(u.name||'?')[0].toUpperCase()}</div>`}
+        <div style="flex:1;min-width:0;">
+          <div class="un">${u.name||'Unknown'}</div>
+          <div class="ue">${u.email||'No email'}</div>
+          <div class="ubs">
+            ${u.isVip?'<span class="badge b-vip">⭐ VIP</span>':''}
+            ${iN?'<span class="badge b-new">New</span>':ia?'<span class="badge b-active">Active</span>':'<span class="badge b-inactive">Inactive</span>'}
+            <span class="badge b-ver">${ver}</span>
+            <span style="font-size:10px;color:var(--muted);">${u.device||'?'}</span>
+          </div>
+        </div>
+      </div>
+      <div class="ust">
+        <div class="us"><div class="usl">Joined</div><div class="usv" style="font-size:10px;">${j}</div></div>
+        <div class="us"><div class="usl">Last Seen</div><div class="usv" style="font-size:10px;">${ls}</div></div>
+        <div class="us"><div class="usl">Currency</div><div class="usv" style="color:var(--gold);">${cur}</div></div>
+        <div class="us"><div class="usl">Modules</div><div class="usv" style="color:var(--teal);">${mods||'—'}</div></div>
+      </div>
+      ${u.adminNote?`<div class="un2">📝 ${u.adminNote}</div>`:''}
+    </div>`;
+  }).join('');
 }
 
-async function loadAnnouncements(){
-  try{
-    const snap=await getDoc(doc(db,'admin_announcements','latest'));
-    allAnnouncements=snap.exists()?(snap.data().items||[]):[];
-    renderAnnouncements();
-  }catch(e){console.error(e);}
+function openUM(uid){
+  const AU=window.AU||[];
+  const u=AU.find(x=>x.id===uid);if(!u)return;
+  document.getElementById('umName').textContent=u.name||'User Details';
+  const wd=new Date(Date.now()-7*24*60*60*1000);
+  const cur=u.appData?.currencies;
+  const mods=u.appData?.activeModules||[];
+  const fbs=[...(u.feedbacks||[]),...(u.appData?.feedback||[])];
+  document.getElementById('umContent').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+      ${u.avatar?`<img src="${u.avatar}" style="width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);">`
+        :`<div style="width:48px;height:48px;border-radius:50%;background:${aC(u.name||'?')};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:20px;">${(u.name||'?')[0].toUpperCase()}</div>`}
+      <div><div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;">${u.name||'?'}</div>
+      <div style="font-size:12px;color:var(--muted);">${u.email||'—'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px;">${u.device||'?'} · ${u.timezone||'?'}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">
+      <div class="us"><div class="usl">Joined</div><div style="font-size:11px;font-weight:600;">${u.joinDate?new Date(u.joinDate).toLocaleDateString():'-'}</div></div>
+      <div class="us"><div class="usl">Last Active</div><div style="font-size:11px;font-weight:600;">${u.lastActive?new Date(u.lastActive).toLocaleString():'-'}</div></div>
+      <div class="us"><div class="usl">Sessions</div><div class="usv" style="color:var(--blue);">${u.loginCount||1}</div></div>
+      <div class="us"><div class="usl">Time</div><div class="usv" style="color:var(--purple);">${u.totalMinutes||0}m</div></div>
+      <div class="us"><div class="usl">Version</div><div class="usv" style="color:var(--teal);">${u.appVersion||'v2.4'}</div></div>
+      <div class="us"><div class="usl">Language</div><div class="usv" style="font-size:11px;">${u.language||'en'}</div></div>
+    </div>
+    <div style="margin-bottom:10px;"><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Currencies</div>
+    <div style="font-size:13px;color:var(--gold);font-weight:600;">${cur?[cur.primary,cur.secondary,cur.third].filter(Boolean).join(' + '):'Not set'}</div></div>
+    <div style="margin-bottom:10px;"><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Modules (${mods.length})</div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;">${mods.map(m=>`<span style="background:var(--s3);border:1px solid var(--border2);border-radius:50px;padding:2px 9px;font-size:11px;font-weight:600;">${m}</span>`).join('')||'<span style="color:var(--muted);font-size:12px;">No data</span>'}</div></div>
+    ${fbs.length?`<div style="margin-bottom:10px;"><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Feedback</div>
+    ${fbs.slice(0,2).map(f=>`<div style="background:var(--s2);border-radius:7px;padding:7px 9px;margin-bottom:5px;font-size:12px;color:var(--text2);">${'⭐'.repeat(f.rating||0)} ${f.text||f.feature||f.bug||'-'}</div>`).join('')}</div>`:''}
+    <div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Admin Note</div>
+    <textarea id="noteInp" style="width:100%;background:var(--s2);border:1.5px solid var(--border2);border-radius:var(--r);padding:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:none;height:65px;" placeholder="Add a note...">${u.adminNote||''}</textarea></div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+      <button onclick="window.saveNote('${u.id}')" class="btn btn-g btn-sm">💾 Save Note</button>
+      <button onclick="window.toggleVIP('${u.id}')" class="btn ${u.isVip?'btn-c':'btn-t'} btn-sm">${u.isVip?'Remove VIP':'⭐ VIP'}</button>
+    </div>`;
+  document.getElementById('uMod').classList.add('open');
 }
-
-function renderUserStats(){
-  const now=new Date();
-  const today=now.toDateString();
-  const weekAgo=new Date(now-7*24*60*60*1000);
-  const todayUsers=allUsers.filter(u=>new Date(u.joinDate).toDateString()===today).length;
-  const weekActive=allUsers.filter(u=>u.lastActive&&new Date(u.lastActive)>weekAgo).length;
-  const ratings=allFeedback.filter(f=>f.rating>0).map(f=>f.rating);
-  const avgRating=ratings.length?((ratings.reduce((s,r)=>s+r,0)/ratings.length)).toFixed(1):'—';
-
-  document.getElementById('statTotal').textContent=allUsers.length;
-  document.getElementById('statToday').textContent=todayUsers;
-  document.getElementById('statWeek').textContent=weekActive;
-  document.getElementById('statRating').textContent=avgRating+(avgRating!=='—'?'⭐':'');
-}
-
-function renderUsersTable(){
-  const table=document.getElementById('usersTable');
-  const loading=document.getElementById('usersLoading');
-  loading.style.display='none';
-  table.style.display='block';
-
-  if(!allUsers.length){table.innerHTML='<div class="empty-state">No users yet. Share WealthOS to get users!</div>';return;}
-
-  const sorted=[...allUsers].sort((a,b)=>new Date(b.lastActive||0)-new Date(a.lastActive||0));
-  const now=new Date();
-  const weekAgo=new Date(now-7*24*60*60*1000);
-
-  table.innerHTML=`<table class="data-table">
-    <thead><tr>
-      <th>User</th><th>Email</th><th>Joined</th><th>Last Active</th>
-      <th>Device</th><th>Sessions</th><th>Status</th>
-    </tr></thead>
-    <tbody>
-    ${sorted.map(u=>{
-      const isActive=u.lastActive&&new Date(u.lastActive)>weekAgo;
-      const isNew=u.isNew||new Date(u.joinDate)>weekAgo;
-      const joined=u.joinDate?new Date(u.joinDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
-      const lastActive=u.lastActive?new Date(u.lastActive).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—';
-      return `<tr>
-        <td><div style="display:flex;align-items:center;gap:8px;">
-          ${u.avatar?`<img src="${u.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">`:'<div style="width:28px;height:28px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">'+( u.name?u.name[0].toUpperCase():'?')+'</div>'}
-          <span style="font-weight:600;">${u.name||'Unknown'}</span>
-        </div></td>
-        <td style="color:var(--text2);">${u.email||'—'}</td>
-        <td style="color:var(--muted);">${joined}</td>
-        <td style="color:var(--muted);">${lastActive}</td>
-        <td style="color:var(--text2);">${u.device||'—'}</td>
-        <td style="color:var(--text2);">${u.loginCount||1}</td>
-        <td>${isNew?'<span class="badge badge-new">New</span>':isActive?'<span class="badge badge-active">Active</span>':'<span class="badge badge-inactive">Inactive</span>'}</td>
-      </tr>`;
-    }).join('')}
-    </tbody>
-  </table>`;
-}
+function closeUM(){document.getElementById('uMod').classList.remove('open');}
 
 function renderAnalytics(){
-  // Device breakdown
-  const devices={};
-  allUsers.forEach(u=>{devices[u.device||'Unknown']=(devices[u.device||'Unknown']||0)+1;});
-  const maxD=Math.max(...Object.values(devices),1);
-  document.getElementById('deviceChart').innerHTML=Object.entries(devices).map(([d,n])=>`
-    <div class="chart-bar-h">
-      <div class="chb-label">${d}</div>
-      <div class="chb-wrap"><div class="chb-fill" style="width:${Math.round(n/maxD*100)}%;background:var(--blue);color:#05050d;">${n}</div></div>
-    </div>`).join('')||'<div class="empty-state">No data yet</div>';
-
-  // Region (timezone based)
-  const regions={};
-  allUsers.forEach(u=>{
-    const tz=u.timezone||'Unknown';
-    const region=tz.includes('Dubai')||tz.includes('Riyadh')||tz.includes('Kuwait')?'Gulf/UAE':
-      tz.includes('Kolkata')||tz.includes('Karachi')||tz.includes('Dhaka')?'South Asia':
-      tz.includes('Africa')||tz.includes('Lagos')||tz.includes('Nairobi')?'Africa':'Other';
-    regions[region]=(regions[region]||0)+1;
-  });
-  const maxR=Math.max(...Object.values(regions),1);
-  const rColors={'Gulf/UAE':'var(--gold)','South Asia':'var(--teal)','Africa':'var(--green)','Other':'var(--purple)'};
-  document.getElementById('regionChart').innerHTML=Object.entries(regions).map(([r,n])=>`
-    <div class="chart-bar-h">
-      <div class="chb-label">${r}</div>
-      <div class="chb-wrap"><div class="chb-fill" style="width:${Math.round(n/maxR*100)}%;background:${rColors[r]||'var(--muted)'};color:#05050d;">${n}</div></div>
-    </div>`).join('')||'<div class="empty-state">No data yet</div>';
-
-  // Session stats
-  const sessions=allUsers.filter(u=>u.totalMinutes>0);
-  const avgMin=sessions.length?Math.round(sessions.reduce((s,u)=>s+(u.totalMinutes||0),0)/sessions.length):0;
-  document.getElementById('sessionStats').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-      <div class="stat-card"><div class="sc-label">Avg Session</div><div class="sc-val" style="font-size:22px;">${avgMin}m</div></div>
-      <div class="stat-card"><div class="sc-label">Total Sessions</div><div class="sc-val" style="font-size:22px;">${allUsers.reduce((s,u)=>s+(u.loginCount||1),0)}</div></div>
-      <div class="stat-card"><div class="sc-label">With Activity</div><div class="sc-val" style="font-size:22px;">${sessions.length}</div></div>
-    </div>`;
-
-  // Growth chart (last 14 days)
-  const days=14;const growthData=[];
-  for(let i=days-1;i>=0;i--){
-    const d=new Date();d.setDate(d.getDate()-i);
-    const ds=d.toDateString();
-    const count=allUsers.filter(u=>new Date(u.joinDate).toDateString()===ds).length;
-    growthData.push({label:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),count});
-  }
-  const maxG=Math.max(...growthData.map(d=>d.count),1);
-  document.getElementById('growthChart').innerHTML=`
-    <div style="display:flex;align-items:flex-end;gap:6px;height:80px;">
-      ${growthData.map((d,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <div style="width:100%;height:${Math.round((d.count/maxG)*70)+4}px;background:${i===growthData.length-1?'var(--gold)':'var(--purple)'};border-radius:4px 4px 0 0;opacity:${i===growthData.length-1?1:0.6};min-height:4px;"></div>
-      </div>`).join('')}
-    </div>
-    <div style="display:flex;gap:6px;margin-top:6px;">
-      ${growthData.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:var(--muted);">${i%2===0?d.label:''}</div>`).join('')}
-    </div>`;
+  const AU=window.AU||[];
+  // Growth
+  const gd=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const c=AU.filter(u=>u.joinDate&&new Date(u.joinDate).toDateString()===d.toDateString()).length;gd.push({l:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),c});}
+  const mg=Math.max(...gd.map(d=>d.c),1);
+  document.getElementById('gChart').innerHTML=gd.map((d,i)=>`<div class="cvc"><div class="cvb" style="height:${Math.round((d.c/mg)*75)+4}px;background:${i===gd.length-1?'var(--gold)':'var(--purple)'};opacity:${i===gd.length-1?1:0.5};"></div></div>`).join('');
+  document.getElementById('gLabels').innerHTML=gd.map((d,i)=>`<div style="flex:1;text-align:center;font-size:8px;color:var(--muted);">${i%5===0?d.l:''}</div>`).join('');
+  // Peak hours
+  const hrs=new Array(24).fill(0);AU.forEach(u=>{if(u.lastActive){const h=new Date(u.lastActive).getHours();hrs[h]++;}});
+  const mh=Math.max(...hrs,1);const ph=hrs.map((h,i)=>({h:i,c:h})).sort((a,b)=>b.c-a.c).slice(0,6);
+  document.getElementById('hChart').innerHTML=ph.map(p=>`<div class="bh"><div class="bhl">${p.h}:00-${p.h+1}:00</div><div class="bhw"><div class="bhf" style="width:${Math.round(p.c/mh*100)}%;background:var(--blue);color:#fff;">${p.c>0?p.c:''}</div></div><div class="bhn">${p.c}</div></div>`).join('')||'<div class="empty"><div class="et">No session data yet</div></div>';
+  // Device
+  const devs={};AU.forEach(u=>{const d=u.device||'Unknown';devs[d]=(devs[d]||0)+1;});
+  const md=Math.max(...Object.values(devs),1);
+  document.getElementById('dChart').innerHTML=Object.entries(devs).sort((a,b)=>b[1]-a[1]).map(([d,n])=>`<div class="bh"><div class="bhl">${d}</div><div class="bhw"><div class="bhf" style="width:${Math.round(n/md*100)}%;background:var(--teal);color:#03030a;">${n}</div></div><div class="bhn">${n}</div></div>`).join('')||'<div class="empty"><div class="et">No data</div></div>';
+  // Regions
+  const regs={};AU.forEach(u=>{const tz=u.timezone||'';const r=tz.includes('Dubai')||tz.includes('Riyadh')||tz.includes('Kuwait')||tz.includes('Abu_Dhabi')?'🇦🇪 Gulf':tz.includes('Kolkata')?'🇮🇳 India':tz.includes('Karachi')?'🇵🇰 Pakistan':tz.includes('Lagos')||tz.includes('Nairobi')||tz.includes('Cairo')?'🌍 Africa':tz.includes('London')?'🇬🇧 UK':tz.includes('America')?'🌎 Americas':'🌐 Other';regs[r]=(regs[r]||0)+1;});
+  const mr=Math.max(...Object.values(regs),1);const rc={'🇦🇪 Gulf':'var(--gold)','🇮🇳 India':'var(--orange)','🇵🇰 Pakistan':'var(--green)','🌍 Africa':'var(--teal)','🇬🇧 UK':'var(--blue)','🌎 Americas':'var(--purple)','🌐 Other':'var(--muted)'};
+  document.getElementById('rChart').innerHTML=Object.entries(regs).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div class="bh"><div class="bhl">${r}</div><div class="bhw"><div class="bhf" style="width:${Math.round(n/mr*100)}%;background:${rc[r]||'var(--muted)'};color:#03030a;">${n}</div></div><div class="bhn">${n}</div></div>`).join('')||'<div class="empty"><div class="et">No data</div></div>';
+  // Version
+  const vers={};AU.forEach(u=>{const v=u.appVersion||'v2.4';vers[v]=(vers[v]||0)+1;});
+  const mv=Math.max(...Object.values(vers),1);
+  document.getElementById('vChart').innerHTML=Object.entries(vers).sort((a,b)=>b[1]-a[1]).map(([v,n])=>`<div class="bh"><div class="bhl">${v}</div><div class="bhw"><div class="bhf" style="width:${Math.round(n/mv*100)}%;background:var(--purple);color:#fff;">${n}</div></div><div class="bhn">${n}</div></div>`).join('')||'<div class="empty"><div class="et">No data</div></div>';
+  // Currencies
+  const curs={};AU.forEach(u=>{const c=u.appData?.currencies?.primary||'Unknown';curs[c]=(curs[c]||0)+1;});
+  const mc=Math.max(...Object.values(curs),1);
+  document.getElementById('cChart').innerHTML=Object.entries(curs).sort((a,b)=>b[1]-a[1]).map(([c,n])=>`<div class="bh"><div class="bhl">${c}</div><div class="bhw"><div class="bhf" style="width:${Math.round(n/mc*100)}%;background:var(--gold);color:#03030a;">${n}</div></div><div class="bhn">${n}</div></div>`).join('')||'<div class="empty"><div class="et">No data</div></div>';
+  // Modules
+  const mods={};AU.forEach(u=>{(u.appData?.activeModules||[]).forEach(m=>{mods[m]=(mods[m]||0)+1;});});
+  const mm=Math.max(...Object.values(mods),1);
+  document.getElementById('mChart').innerHTML=Object.entries(mods).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([m,n])=>`<div class="bh"><div class="bhl">${m}</div><div class="bhw"><div class="bhf" style="width:${Math.round(n/mm*100)}%;background:var(--purple);color:#fff;">${n}</div></div><div class="bhn">${n}</div></div>`).join('')||'<div class="empty"><div class="et">No module data</div></div>';
+  // Top 5
+  const t5=[...AU].sort((a,b)=>(b.loginCount||0)-(a.loginCount||0)).slice(0,5);
+  document.getElementById('top5').innerHTML=t5.length?`<table><thead><tr><th>#</th><th>User</th><th>Email</th><th>Sessions</th><th>Time</th><th>Currency</th><th>Last Active</th></tr></thead><tbody>
+  ${t5.map((u,i)=>`<tr><td><strong style="color:var(--gold);">#${i+1}</strong></td>
+  <td><div style="display:flex;align-items:center;gap:7px;">${u.avatar?`<img src="${u.avatar}" style="width:24px;height:24px;border-radius:50%;">`:`<div style="width:24px;height:24px;border-radius:50%;background:${aC(u.name||'?')};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">${(u.name||'?')[0].toUpperCase()}</div>`}<span style="font-weight:600;">${u.name||'?'}</span></div></td>
+  <td style="color:var(--muted);font-size:11px;">${u.email||'—'}</td>
+  <td style="color:var(--teal);font-weight:700;">${u.loginCount||1}</td>
+  <td style="color:var(--purple);">${u.totalMinutes||0}m</td>
+  <td style="color:var(--gold);">${u.appData?.currencies?.primary||'—'}</td>
+  <td style="color:var(--muted);font-size:11px;">${u.lastActive?tAgo(new Date(u.lastActive)):'Never'}</td></tr>`).join('')}
+  </tbody></table>`:'<div class="empty"><div class="et">No data yet</div></div>';
 }
 
-function renderFeedback(){
-  const el=document.getElementById('feedbackList');
-  if(!allFeedback.length){el.innerHTML='<div class="empty-state">No feedback yet. Share WealthOS to get feedback!</div>';return;}
-  el.innerHTML=allFeedback.map(f=>`
-    <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
-        <div>
-          <div style="font-weight:600;font-size:14px;">${f.userName||'Anonymous'}</div>
-          <div style="font-size:11px;color:var(--muted);">${f.userEmail||''}</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="stars">${'⭐'.repeat(f.rating||0)}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${new Date(f.date).toLocaleDateString()}</div>
-        </div>
-      </div>
-      ${f.text?`<div style="font-size:13px;color:var(--text2);margin-bottom:6px;padding:8px;background:var(--s3);border-radius:8px;">💬 ${f.text}</div>`:''}
-      ${f.feature?`<div style="font-size:12px;color:var(--purple);padding:6px 10px;background:rgba(139,109,255,.08);border-radius:8px;margin-bottom:4px;">🚀 Feature Request: ${f.feature}</div>`:''}
-      ${f.bug?`<div style="font-size:12px;color:var(--coral);padding:6px 10px;background:rgba(255,87,87,.08);border-radius:8px;">🐛 Bug Report: ${f.bug}</div>`:''}
-    </div>`).join('');
+function renderVerStats(){
+  const AU=window.AU||[];
+  const vers={};AU.forEach(u=>{const v=u.appVersion||'v2.4';vers[v]=(vers[v]||0)+1;});
+  const tot=AU.length||1;const mv=Math.max(...Object.values(vers),1);
+  document.getElementById('verUsrs').innerHTML=Object.keys(vers).length?Object.entries(vers).sort((a,b)=>b[1]-a[1]).map(([v,n])=>`<div style="margin-bottom:9px;"><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;">${v}</span><span style="font-size:11px;color:var(--text2);">${n} users (${Math.round(n/tot*100)}%)</span></div><div style="height:7px;background:var(--s3);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${Math.round(n/mv*100)}%;background:var(--purple);border-radius:3px;transition:width .8s;"></div></div></div>`).join(''):'<div class="empty"><div class="et">No version data</div></div>';
 }
 
-function renderAnnouncements(){
-  const el=document.getElementById('announceHistory');
-  if(!allAnnouncements.length){el.innerHTML='<div class="empty-state">No announcements yet.</div>';return;}
-  el.innerHTML=allAnnouncements.map((a,i)=>`
-    <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div style="font-weight:700;font-size:13px;color:var(--gold);">${a.title}</div>
-        <button onclick="deleteAnnouncement(${i})" style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:12px;">Delete</button>
-      </div>
-      <div style="font-size:12px;color:var(--text2);margin-top:4px;">${a.body}</div>
-      <div style="font-size:10px;color:var(--muted);margin-top:6px;">${new Date(a.date).toLocaleString()}</div>
-    </div>`).join('');
+function renderFB(){
+  const AF=window.AF||[];
+  const f=document.getElementById('fbFilt')?.value||'all';
+  let items=AF;
+  if(f==='5')items=AF.filter(x=>x.rating===5);
+  else if(f==='4')items=AF.filter(x=>x.rating===4);
+  else if(f==='low')items=AF.filter(x=>x.rating<=3&&x.rating>0);
+  const el=document.getElementById('fbList');
+  if(!items.length){el.innerHTML='<div class="empty"><div class="ei">💬</div><div class="et">No feedback yet.<br>Share WealthOS to get feedback!</div></div>';return;}
+  el.innerHTML=items.map(f=>`<div class="fc"><div class="fc-hd"><div><div class="fcu">${f.userName||'Anonymous'}</div><div class="fce">${f.userEmail||''}</div></div><div style="text-align:right;"><div class="fcs">${'⭐'.repeat(f.rating||0)}</div><div class="fcd">${f.date?new Date(f.date).toLocaleDateString():''}</div></div></div>${f.text?`<div class="fct">💬 ${f.text}</div>`:''}${f.feature?`<div class="fcf">🚀 ${f.feature}</div>`:''}${f.bug?`<div class="fcb">🐛 ${f.bug}</div>`:''}</div>`).join('');
 }
 
-window.postAnnouncement=async()=>{
-  const title=document.getElementById('annTitle').value.trim();
-  const body=document.getElementById('annBody').value.trim();
-  if(!title||!body){alert('Please add title and message.');return;}
-  const ann={id:Date.now().toString(),title,body,date:new Date().toISOString()};
-  allAnnouncements.unshift(ann);
-  await setDoc(doc(db,'admin_announcements','latest'),{items:allAnnouncements.slice(0,20)});
-  renderAnnouncements();
-  document.getElementById('annTitle').value='';
-  document.getElementById('annBody').value='';
-  alert('✅ Announcement posted! All users will see it next time they open WealthOS.');
-};
-
-window.deleteAnnouncement=async(i)=>{
-  if(!confirm('Delete this announcement?'))return;
-  allAnnouncements.splice(i,1);
-  await setDoc(doc(db,'admin_announcements','latest'),{items:allAnnouncements});
-  renderAnnouncements();
-};
-
-// Feature requests and bug reports
-function renderTab(tab){
-  const items=allFeedback.filter(f=>tab==='features'?f.feature:f.bug);
-  const el=document.getElementById(tab==='features'?'featureList':'bugList');
-  if(!items.length){el.innerHTML=`<div class="empty-state">No ${tab==='features'?'feature requests':'bug reports'} yet.</div>`;return;}
-  el.innerHTML=items.map(f=>`
-    <div style="background:var(--s2);border:1px solid ${tab==='features'?'rgba(139,109,255,.2)':'rgba(255,87,87,.2)'};border-radius:var(--r);padding:12px;margin-bottom:8px;">
-      <div style="font-size:13px;font-weight:600;color:${tab==='features'?'var(--purple)':'var(--coral)'};">${tab==='features'?'🚀 '+f.feature:'🐛 '+f.bug}</div>
-      <div style="display:flex;justify-content:space-between;margin-top:6px;">
-        <span style="font-size:11px;color:var(--muted);">${f.userName||'Anonymous'}</span>
-        <span style="font-size:11px;color:var(--muted);">${new Date(f.date).toLocaleDateString()}</span>
-      </div>
-    </div>`).join('');
+function renderFeatures(){
+  const AF=window.AF||[];
+  const items=AF.filter(f=>f.feature);
+  const counts={};items.forEach(f=>{const k=f.feature.toLowerCase().trim();if(!counts[k])counts[k]={count:0,feature:f.feature,users:[]};counts[k].count++;counts[k].users.push(f.userName||'Anonymous');});
+  const sorted=Object.values(counts).sort((a,b)=>b.count-a.count);
+  const el=document.getElementById('ftList');
+  if(!sorted.length){el.innerHTML='<div class="empty"><div class="ei">🚀</div><div class="et">No feature requests yet</div></div>';return;}
+  el.innerHTML=sorted.map((f,i)=>`<div style="background:var(--s2);border:1px solid rgba(139,109,255,.2);border-radius:var(--r);padding:13px;margin-bottom:7px;display:flex;align-items:flex-start;gap:11px;"><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--gold);width:28px;flex-shrink:0;">#${i+1}</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:3px;">🚀 ${f.feature}</div><div style="font-size:11px;color:var(--muted);">${f.users.slice(0,3).join(', ')}${f.users.length>3?' +'+( f.users.length-3)+' more':''}</div></div><div style="background:rgba(139,109,255,.15);color:var(--purple);border-radius:50px;padding:3px 11px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;flex-shrink:0;">${f.count}x</div></div>`).join('');
 }
 
-window.showTab=(id,btn)=>{
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('on'));
-  btn.classList.add('on');
-  document.getElementById('tab-'+id).classList.add('on');
-  if(id==='features'||id==='bugs') renderTab(id);
-};
+function renderBugs(){
+  const AF=window.AF||[];
+  const items=AF.filter(f=>f.bug);
+  const counts={};items.forEach(f=>{const k=f.bug.toLowerCase().trim();if(!counts[k])counts[k]={count:0,bug:f.bug,users:[]};counts[k].count++;counts[k].users.push(f.userName||'Anonymous');});
+  const sorted=Object.values(counts).sort((a,b)=>b.count-a.count);
+  const el=document.getElementById('bgList');
+  if(!sorted.length){el.innerHTML='<div class="empty"><div class="ei">🐛</div><div class="et">No bug reports yet</div></div>';return;}
+  el.innerHTML=sorted.map((b,i)=>`<div style="background:var(--s2);border:1px solid rgba(255,87,87,.2);border-radius:var(--r);padding:13px;margin-bottom:7px;display:flex;align-items:flex-start;gap:11px;"><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--coral);width:28px;flex-shrink:0;">#${i+1}</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:3px;">🐛 ${b.bug}</div><div style="font-size:11px;color:var(--muted);">${b.users.slice(0,3).join(', ')}${b.users.length>3?' +'+( b.users.length-3)+' more':''}</div></div><div style="background:rgba(255,87,87,.15);color:var(--coral);border-radius:50px;padding:3px 11px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;flex-shrink:0;">${b.count}x</div></div>`).join('');
+}
+
+function renderAnns(){
+  const AA=window.AA||[];
+  const ti={'update':'🆕','fix':'🐛','announcement':'📢','maintenance':'⚙️'};
+  const el=document.getElementById('anList');
+  if(!AA.length){el.innerHTML='<div class="empty"><div class="ei">📢</div><div class="et">No announcements yet</div></div>';return;}
+  el.innerHTML=AA.map((a,i)=>`<div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:7px;"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--gold);">${ti[a.type]||'📢'} ${a.title}</div><button onclick="window.delAnn(${i})" style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:12px;">✕</button></div><div style="font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;">${a.body}</div><div style="font-size:10px;color:var(--muted);margin-top:5px;">${new Date(a.date).toLocaleString()}</div></div>`).join('');
+}
+
+// EXPORTS
+function exportUsersCSV(){
+  const AU=window.AU||[];if(!AU.length){alert('No users');return;}
+  const h=['Name','Email','Join Date','Last Active','Device','Timezone','Sessions','Minutes','Version','Primary Currency','Modules','Is VIP','Admin Note'];
+  const r=AU.map(u=>[u.name||'',u.email||'',u.joinDate?new Date(u.joinDate).toLocaleDateString():'',u.lastActive?new Date(u.lastActive).toLocaleDateString():'',u.device||'',u.timezone||'',u.loginCount||1,u.totalMinutes||0,u.appVersion||'v2.4',u.appData?.currencies?.primary||'',(u.appData?.activeModules||[]).length,u.isVip?'Yes':'No',u.adminNote||'']);
+  dlCSV('wealthos-users-'+Date.now()+'.csv',[h,...r]);
+}
+function exportFeedbackCSV(){
+  const AF=window.AF||[];if(!AF.length){alert('No feedback');return;}
+  const h=['User','Email','Date','Rating','Feedback','Feature','Bug'];
+  const r=AF.map(f=>[f.userName||'',f.userEmail||'',f.date?new Date(f.date).toLocaleDateString():'',f.rating||0,f.text||'',f.feature||'',f.bug||'']);
+  dlCSV('wealthos-feedback.csv',[h,...r]);
+}
+function exportFeaturesCSV(){const AF=window.AF||[];const i=AF.filter(f=>f.feature);if(!i.length){alert('No features');return;}dlCSV('wealthos-features.csv',[['Feature','User','Date'],...i.map(f=>[f.feature,f.userName||'',f.date?new Date(f.date).toLocaleDateString():''])]);}
+function exportBugsCSV(){const AF=window.AF||[];const i=AF.filter(f=>f.bug);if(!i.length){alert('No bugs');return;}dlCSV('wealthos-bugs.csv',[['Bug','User','Date'],...i.map(f=>[f.bug,f.userName||'',f.date?new Date(f.date).toLocaleDateString():''])]);}
+window.exportAllCSV=function(){exportUsersCSV();setTimeout(exportFeedbackCSV,400);};
+function dlCSV(name,data){const csv=data.map(r=>r.map(c=>'"'+(String(c).replace(/"/g,'""'))+'"').join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=name;a.click();}
+
+function ST(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));if(btn)btn.classList.add('on');const el=document.getElementById('tc-'+id);if(el)el.classList.add('on');window.scrollTo(0,0);}
 </script>
 </body>
 </html>
