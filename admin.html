@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WealthOS Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#05050d;--s1:#0c0c18;--s2:#111120;--s3:#181830;--border:#1e1e35;--border2:#2a2a48;--gold:#e8b84b;--teal:#00d4aa;--coral:#ff5757;--blue:#4d9fff;--purple:#8b6dff;--green:#4ade80;--orange:#ff8c42;--text:#eeeef8;--text2:#8888aa;--muted:#444466;--r:12px;--r2:18px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 0% 0%,rgba(139,109,255,.08),transparent 55%);pointer-events:none;z-index:0;}
+
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg);flex-direction:column;gap:16px;text-align:center;padding:40px;}
+.admin-logo{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--gold);}
+.admin-sub{font-size:14px;color:var(--muted);margin-bottom:16px;}
+.google-btn{display:flex;align-items:center;gap:10px;background:#fff;color:#111;border:none;padding:14px 24px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;transition:all .2s;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.google-btn:hover{transform:translateY(-2px);}
+.google-btn img{width:20px;height:20px;}
+#accessDenied{display:none;color:var(--coral);font-size:14px;font-weight:600;background:rgba(255,87,87,.1);border:1px solid rgba(255,87,87,.2);border-radius:var(--r);padding:12px 20px;}
+
+/* APP */
+#appScreen{display:none;padding:20px;max-width:1200px;margin:0 auto;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.tl{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+.tl span{color:var(--gold);}
+.btn-signout{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:8px 16px;border-radius:50px;cursor:pointer;font-size:13px;font-family:'Syne',sans-serif;transition:all .2s;}
+.btn-signout:hover{border-color:var(--coral);color:var(--coral);}
+
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:768px){.grid4{grid-template-columns:1fr 1fr;}.grid2{grid-template-columns:1fr;}.grid3{grid-template-columns:1fr 1fr;}}
+
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);padding:18px;position:relative;overflow:hidden;}
+.card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.stat-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.sc-icon{font-size:24px;margin-bottom:8px;}
+.sc-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+.sc-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;}
+.sc-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{padding:8px 16px;border-radius:50px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;font-family:'Syne',sans-serif;}
+.tab.on{background:var(--s2);border-color:var(--gold);color:var(--gold);}
+.tab-content{display:none;}
+.tab-content.on{display:block;}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;}
+.data-table th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border2);}
+.data-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.data-table tr:hover td{background:var(--s2);}
+.badge{display:inline-flex;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;}
+.badge-new{background:rgba(74,222,128,.12);color:var(--green);}
+.badge-active{background:rgba(0,212,170,.12);color:var(--teal);}
+.badge-inactive{background:rgba(68,68,102,.2);color:var(--muted);}
+.stars{color:var(--gold);font-size:14px;}
+
+/* CHART */
+.chart-bar-h{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.chb-label{font-size:12px;color:var(--text2);width:120px;flex-shrink:0;}
+.chb-wrap{flex:1;height:24px;background:var(--border);border-radius:6px;overflow:hidden;}
+.chb-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;transition:width .8s ease;}
+.chb-count{font-size:12px;color:var(--muted);width:30px;text-align:right;}
+
+/* ANNOUNCE */
+.announce-form{display:flex;flex-direction:column;gap:10px;}
+.ainp{background:var(--s2);border:1.5px solid var(--border);border-radius:var(--r);padding:11px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%;transition:border-color .2s;}
+.ainp:focus{border-color:var(--gold);}
+.ainp::placeholder{color:var(--muted);}
+.abtn{background:var(--gold);color:#05050d;border:none;padding:12px 24px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;transition:all .2s;}
+.abtn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,184,75,.3);}
+.abtn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:13px;transition:all .2s;}
+.abtn-ghost:hover{border-color:var(--muted);color:var(--text);}
+
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+.loading-state{text-align:center;padding:40px;}
+.spinner{width:32px;height:32px;border:3px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s ease both;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="admin-logo">🔒 WealthOS Admin</div>
+  <div class="admin-sub">Restricted access — authorized personnel only</div>
+  <button class="google-btn" onclick="adminLogin()">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+    Sign in with Google
+  </button>
+  <div id="accessDenied">⛔ Access denied. This panel is restricted to admin accounts only.</div>
+</div>
+
+<!-- APP -->
+<div id="appScreen">
+  <div class="topbar">
+    <div class="tl">WealthOS <span>Admin</span></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="font-size:13px;color:var(--muted);" id="lastRefresh"></div>
+      <button onclick="loadAllData()" style="background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:8px 14px;border-radius:50px;cursor:pointer;font-size:12px;font-family:'Syne',sans-serif;font-weight:600;">↻ Refresh</button>
+      <button class="btn-signout" onclick="adminSignOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid4 fade-up" id="statsGrid">
+    <div class="stat-card"><div class="sc-icon">👥</div><div class="sc-label">Total Users</div><div class="sc-val" id="statTotal">—</div></div>
+    <div class="stat-card"><div class="sc-icon">🆕</div><div class="sc-label">New Today</div><div class="sc-val" id="statToday">—</div></div>
+    <div class="stat-card"><div class="sc-icon">⚡</div><div class="sc-label">Active This Week</div><div class="sc-val" id="statWeek">—</div></div>
+    <div class="stat-card"><div class="sc-icon">⭐</div><div class="sc-label">Avg Rating</div><div class="sc-val" id="statRating">—</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="showTab('users',this)">👥 Users</button>
+    <button class="tab" onclick="showTab('analytics',this)">📊 Analytics</button>
+    <button class="tab" onclick="showTab('feedback',this)">💬 Feedback</button>
+    <button class="tab" onclick="showTab('announce',this)">📢 Announcements</button>
+    <button class="tab" onclick="showTab('features',this)">🚀 Feature Requests</button>
+    <button class="tab" onclick="showTab('bugs',this)">🐛 Bug Reports</button>
+  </div>
+
+  <!-- USERS TAB -->
+  <div class="tab-content on" id="tab-users">
+    <div class="card">
+      <div class="card-title">👥 All Users</div>
+      <div id="usersLoading" class="loading-state"><div class="spinner"></div><div style="color:var(--muted);font-size:13px;">Loading users...</div></div>
+      <div id="usersTable" style="overflow-x:auto;display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TAB -->
+  <div class="tab-content" id="tab-analytics">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">📱 Device Breakdown</div>
+        <div id="deviceChart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🌍 Top Regions</div>
+        <div id="regionChart"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⏱️ Average Session Time</div>
+      <div id="sessionStats"></div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">📈 User Growth (Last 30 Days)</div>
+      <div id="growthChart"></div>
+    </div>
+  </div>
+
+  <!-- FEEDBACK TAB -->
+  <div class="tab-content" id="tab-feedback">
+    <div class="card">
+      <div class="card-title">⭐ User Ratings & Feedback</div>
+      <div id="feedbackList"></div>
+    </div>
+  </div>
+
+  <!-- ANNOUNCEMENTS TAB -->
+  <div class="tab-content" id="tab-announce">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">📢 Post New Announcement</div>
+        <div class="announce-form">
+          <div>
+            <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">TITLE</div>
+            <input class="ainp" id="annTitle" placeholder="e.g. New Feature Added!">
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;">MESSAGE</div>
+            <textarea class="ainp" id="annBody" style="resize:vertical;min-height:80px;" placeholder="Describe the update or announcement..."></textarea>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="abtn" onclick="postAnnouncement()">📢 Post to All Users</button>
+            <button class="abtn-ghost" onclick="document.getElementById('annTitle').value='';document.getElementById('annBody').value='';">Clear</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Previous Announcements</div>
+        <div id="announceHistory"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE REQUESTS TAB -->
+  <div class="tab-content" id="tab-features">
+    <div class="card">
+      <div class="card-title">🚀 Feature Requests from Users</div>
+      <div id="featureList"></div>
+    </div>
+  </div>
+
+  <!-- BUG REPORTS TAB -->
+  <div class="tab-content" id="tab-bugs">
+    <div class="card">
+      <div class="card-title">🐛 Bug Reports</div>
+      <div id="bugList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut as fbOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,getDocs,doc,setDoc,getDoc,query,orderBy,limit}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg={apiKey:"AIzaSyDBR27thvE2M_viPJqImzyRNysKlpgnvgQ",authDomain:"money-os-2e871.firebaseapp.com",projectId:"money-os-2e871",storageBucket:"money-os-2e871.firebasestorage.app",messagingSenderId:"1024122836266",appId:"1:1024122836266:web:9464e546bd06e19d30ba53"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const prov=new GoogleAuthProvider();
+
+// ADMIN EMAILS - add your email here
+const ADMIN_EMAILS=['faizal@digidxb.com','digidxb@gmail.com'];
+
+let allUsers=[], allFeedback=[], allAnnouncements=[];
+
+onAuthStateChanged(auth,async user=>{
+  if(user){
+    if(!ADMIN_EMAILS.includes(user.email)){
+      document.getElementById('accessDenied').style.display='block';
+      await fbOut(auth);
+      return;
+    }
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appScreen').style.display='block';
+    await loadAllData();
+  }
+});
+
+window.adminLogin=async()=>{
+  try{await signInWithPopup(auth,prov);}
+  catch(e){alert('Login failed: '+e.message);}
+};
+window.adminSignOut=async()=>{if(confirm('Sign out?'))await fbOut(auth);window.location.reload();};
+
+window.loadAllData=async()=>{
+  document.getElementById('lastRefresh').textContent='Loading...';
+  await Promise.all([loadUsers(),loadFeedback(),loadAnnouncements()]);
+  document.getElementById('lastRefresh').textContent='Updated: '+new Date().toLocaleTimeString();
+};
+
+async function loadUsers(){
+  try{
+    const snap=await getDocs(collection(db,'admin_users'));
+    allUsers=snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderUserStats();
+    renderUsersTable();
+    renderAnalytics();
+  }catch(e){console.error('Load users error:',e);}
+}
+
+async function loadFeedback(){
+  try{
+    allFeedback=[];
+    // Get feedback from all users
+    for(const user of allUsers){
+      if(user.feedbacks&&user.feedbacks.length){
+        user.feedbacks.forEach(f=>{
+          allFeedback.push({...f,userName:user.name,userEmail:user.email});
+        });
+      }
+    }
+    allFeedback.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    renderFeedback();
+  }catch(e){console.error(e);}
+}
+
+async function loadAnnouncements(){
+  try{
+    const snap=await getDoc(doc(db,'admin_announcements','latest'));
+    allAnnouncements=snap.exists()?(snap.data().items||[]):[];
+    renderAnnouncements();
+  }catch(e){console.error(e);}
+}
+
+function renderUserStats(){
+  const now=new Date();
+  const today=now.toDateString();
+  const weekAgo=new Date(now-7*24*60*60*1000);
+  const todayUsers=allUsers.filter(u=>new Date(u.joinDate).toDateString()===today).length;
+  const weekActive=allUsers.filter(u=>u.lastActive&&new Date(u.lastActive)>weekAgo).length;
+  const ratings=allFeedback.filter(f=>f.rating>0).map(f=>f.rating);
+  const avgRating=ratings.length?((ratings.reduce((s,r)=>s+r,0)/ratings.length)).toFixed(1):'—';
+
+  document.getElementById('statTotal').textContent=allUsers.length;
+  document.getElementById('statToday').textContent=todayUsers;
+  document.getElementById('statWeek').textContent=weekActive;
+  document.getElementById('statRating').textContent=avgRating+(avgRating!=='—'?'⭐':'');
+}
+
+function renderUsersTable(){
+  const table=document.getElementById('usersTable');
+  const loading=document.getElementById('usersLoading');
+  loading.style.display='none';
+  table.style.display='block';
+
+  if(!allUsers.length){table.innerHTML='<div class="empty-state">No users yet. Share WealthOS to get users!</div>';return;}
+
+  const sorted=[...allUsers].sort((a,b)=>new Date(b.lastActive||0)-new Date(a.lastActive||0));
+  const now=new Date();
+  const weekAgo=new Date(now-7*24*60*60*1000);
+
+  table.innerHTML=`<table class="data-table">
+    <thead><tr>
+      <th>User</th><th>Email</th><th>Joined</th><th>Last Active</th>
+      <th>Device</th><th>Sessions</th><th>Status</th>
+    </tr></thead>
+    <tbody>
+    ${sorted.map(u=>{
+      const isActive=u.lastActive&&new Date(u.lastActive)>weekAgo;
+      const isNew=u.isNew||new Date(u.joinDate)>weekAgo;
+      const joined=u.joinDate?new Date(u.joinDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+      const lastActive=u.lastActive?new Date(u.lastActive).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—';
+      return `<tr>
+        <td><div style="display:flex;align-items:center;gap:8px;">
+          ${u.avatar?`<img src="${u.avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">`:'<div style="width:28px;height:28px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">'+( u.name?u.name[0].toUpperCase():'?')+'</div>'}
+          <span style="font-weight:600;">${u.name||'Unknown'}</span>
+        </div></td>
+        <td style="color:var(--text2);">${u.email||'—'}</td>
+        <td style="color:var(--muted);">${joined}</td>
+        <td style="color:var(--muted);">${lastActive}</td>
+        <td style="color:var(--text2);">${u.device||'—'}</td>
+        <td style="color:var(--text2);">${u.loginCount||1}</td>
+        <td>${isNew?'<span class="badge badge-new">New</span>':isActive?'<span class="badge badge-active">Active</span>':'<span class="badge badge-inactive">Inactive</span>'}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>`;
+}
+
+function renderAnalytics(){
+  // Device breakdown
+  const devices={};
+  allUsers.forEach(u=>{devices[u.device||'Unknown']=(devices[u.device||'Unknown']||0)+1;});
+  const maxD=Math.max(...Object.values(devices),1);
+  document.getElementById('deviceChart').innerHTML=Object.entries(devices).map(([d,n])=>`
+    <div class="chart-bar-h">
+      <div class="chb-label">${d}</div>
+      <div class="chb-wrap"><div class="chb-fill" style="width:${Math.round(n/maxD*100)}%;background:var(--blue);color:#05050d;">${n}</div></div>
+    </div>`).join('')||'<div class="empty-state">No data yet</div>';
+
+  // Region (timezone based)
+  const regions={};
+  allUsers.forEach(u=>{
+    const tz=u.timezone||'Unknown';
+    const region=tz.includes('Dubai')||tz.includes('Riyadh')||tz.includes('Kuwait')?'Gulf/UAE':
+      tz.includes('Kolkata')||tz.includes('Karachi')||tz.includes('Dhaka')?'South Asia':
+      tz.includes('Africa')||tz.includes('Lagos')||tz.includes('Nairobi')?'Africa':'Other';
+    regions[region]=(regions[region]||0)+1;
+  });
+  const maxR=Math.max(...Object.values(regions),1);
+  const rColors={'Gulf/UAE':'var(--gold)','South Asia':'var(--teal)','Africa':'var(--green)','Other':'var(--purple)'};
+  document.getElementById('regionChart').innerHTML=Object.entries(regions).map(([r,n])=>`
+    <div class="chart-bar-h">
+      <div class="chb-label">${r}</div>
+      <div class="chb-wrap"><div class="chb-fill" style="width:${Math.round(n/maxR*100)}%;background:${rColors[r]||'var(--muted)'};color:#05050d;">${n}</div></div>
+    </div>`).join('')||'<div class="empty-state">No data yet</div>';
+
+  // Session stats
+  const sessions=allUsers.filter(u=>u.totalMinutes>0);
+  const avgMin=sessions.length?Math.round(sessions.reduce((s,u)=>s+(u.totalMinutes||0),0)/sessions.length):0;
+  document.getElementById('sessionStats').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div class="stat-card"><div class="sc-label">Avg Session</div><div class="sc-val" style="font-size:22px;">${avgMin}m</div></div>
+      <div class="stat-card"><div class="sc-label">Total Sessions</div><div class="sc-val" style="font-size:22px;">${allUsers.reduce((s,u)=>s+(u.loginCount||1),0)}</div></div>
+      <div class="stat-card"><div class="sc-label">With Activity</div><div class="sc-val" style="font-size:22px;">${sessions.length}</div></div>
+    </div>`;
+
+  // Growth chart (last 14 days)
+  const days=14;const growthData=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toDateString();
+    const count=allUsers.filter(u=>new Date(u.joinDate).toDateString()===ds).length;
+    growthData.push({label:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),count});
+  }
+  const maxG=Math.max(...growthData.map(d=>d.count),1);
+  document.getElementById('growthChart').innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:6px;height:80px;">
+      ${growthData.map((d,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div style="width:100%;height:${Math.round((d.count/maxG)*70)+4}px;background:${i===growthData.length-1?'var(--gold)':'var(--purple)'};border-radius:4px 4px 0 0;opacity:${i===growthData.length-1?1:0.6};min-height:4px;"></div>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:6px;">
+      ${growthData.map((d,i)=>`<div style="flex:1;text-align:center;font-size:9px;color:var(--muted);">${i%2===0?d.label:''}</div>`).join('')}
+    </div>`;
+}
+
+function renderFeedback(){
+  const el=document.getElementById('feedbackList');
+  if(!allFeedback.length){el.innerHTML='<div class="empty-state">No feedback yet. Share WealthOS to get feedback!</div>';return;}
+  el.innerHTML=allFeedback.map(f=>`
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div>
+          <div style="font-weight:600;font-size:14px;">${f.userName||'Anonymous'}</div>
+          <div style="font-size:11px;color:var(--muted);">${f.userEmail||''}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="stars">${'⭐'.repeat(f.rating||0)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${new Date(f.date).toLocaleDateString()}</div>
+        </div>
+      </div>
+      ${f.text?`<div style="font-size:13px;color:var(--text2);margin-bottom:6px;padding:8px;background:var(--s3);border-radius:8px;">💬 ${f.text}</div>`:''}
+      ${f.feature?`<div style="font-size:12px;color:var(--purple);padding:6px 10px;background:rgba(139,109,255,.08);border-radius:8px;margin-bottom:4px;">🚀 Feature Request: ${f.feature}</div>`:''}
+      ${f.bug?`<div style="font-size:12px;color:var(--coral);padding:6px 10px;background:rgba(255,87,87,.08);border-radius:8px;">🐛 Bug Report: ${f.bug}</div>`:''}
+    </div>`).join('');
+}
+
+function renderAnnouncements(){
+  const el=document.getElementById('announceHistory');
+  if(!allAnnouncements.length){el.innerHTML='<div class="empty-state">No announcements yet.</div>';return;}
+  el.innerHTML=allAnnouncements.map((a,i)=>`
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="font-weight:700;font-size:13px;color:var(--gold);">${a.title}</div>
+        <button onclick="deleteAnnouncement(${i})" style="background:none;border:none;color:var(--coral);cursor:pointer;font-size:12px;">Delete</button>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">${a.body}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">${new Date(a.date).toLocaleString()}</div>
+    </div>`).join('');
+}
+
+window.postAnnouncement=async()=>{
+  const title=document.getElementById('annTitle').value.trim();
+  const body=document.getElementById('annBody').value.trim();
+  if(!title||!body){alert('Please add title and message.');return;}
+  const ann={id:Date.now().toString(),title,body,date:new Date().toISOString()};
+  allAnnouncements.unshift(ann);
+  await setDoc(doc(db,'admin_announcements','latest'),{items:allAnnouncements.slice(0,20)});
+  renderAnnouncements();
+  document.getElementById('annTitle').value='';
+  document.getElementById('annBody').value='';
+  alert('✅ Announcement posted! All users will see it next time they open WealthOS.');
+};
+
+window.deleteAnnouncement=async(i)=>{
+  if(!confirm('Delete this announcement?'))return;
+  allAnnouncements.splice(i,1);
+  await setDoc(doc(db,'admin_announcements','latest'),{items:allAnnouncements});
+  renderAnnouncements();
+};
+
+// Feature requests and bug reports
+function renderTab(tab){
+  const items=allFeedback.filter(f=>tab==='features'?f.feature:f.bug);
+  const el=document.getElementById(tab==='features'?'featureList':'bugList');
+  if(!items.length){el.innerHTML=`<div class="empty-state">No ${tab==='features'?'feature requests':'bug reports'} yet.</div>`;return;}
+  el.innerHTML=items.map(f=>`
+    <div style="background:var(--s2);border:1px solid ${tab==='features'?'rgba(139,109,255,.2)':'rgba(255,87,87,.2)'};border-radius:var(--r);padding:12px;margin-bottom:8px;">
+      <div style="font-size:13px;font-weight:600;color:${tab==='features'?'var(--purple)':'var(--coral)'};">${tab==='features'?'🚀 '+f.feature:'🐛 '+f.bug}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;">
+        <span style="font-size:11px;color:var(--muted);">${f.userName||'Anonymous'}</span>
+        <span style="font-size:11px;color:var(--muted);">${new Date(f.date).toLocaleDateString()}</span>
+      </div>
+    </div>`).join('');
+}
+
+window.showTab=(id,btn)=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+  if(id==='features'||id==='bugs') renderTab(id);
+};
+</script>
+</body>
+</html>
