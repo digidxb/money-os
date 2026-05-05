@@ -319,7 +319,7 @@ select.fi{cursor:pointer;}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut as fbOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut as fbOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,collection,getDocs,doc,setDoc,getDoc,updateDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyDBR27thvE2M_viPJqImzyRNysKlpgnvgQ",authDomain:"money-os-2e871.firebaseapp.com",projectId:"money-os-2e871",storageBucket:"money-os-2e871.firebasestorage.app",messagingSenderId:"1024122836266",appId:"1:1024122836266:web:9464e546bd06e19d30ba53"};
 const app=initializeApp(cfg);
@@ -338,7 +338,20 @@ onAuthStateChanged(auth,async u=>{
     await loadAll();
   }
 });
-window.adminLogin=async()=>{try{await signInWithPopup(auth,prov);}catch(e){document.getElementById('accessDenied').style.display='block';document.getElementById('accessDenied').textContent='❌ '+e.message;}};
+window.adminLogin=async()=>{
+  try{
+    await signInWithPopup(auth,prov);
+  }catch(e){
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
+      try{ await signInWithRedirect(auth,prov); }
+      catch(e2){ document.getElementById('accessDenied').style.display='block';document.getElementById('accessDenied').textContent='❌ '+e2.message; }
+    } else {
+      document.getElementById('accessDenied').style.display='block';
+      document.getElementById('accessDenied').textContent='❌ '+e.message+' ('+e.code+')';
+    }
+  }
+};
+getRedirectResult(auth).catch(e=>console.log('Redirect:',e.code));
 window.adminOut=async()=>{if(confirm('Sign out?')){await fbOut(auth);window.location.reload();}};
 window.loadAll=async()=>{
   document.getElementById('lastUp').textContent='Loading...';

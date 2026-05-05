@@ -599,7 +599,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div id="loginScreen">
   <div class="wos-logo">WealthOS</div>
   <div class="wos-tagline syne">Your Complete Financial Life</div>
-  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.2);border-radius:50px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.08em;margin-bottom:4px;">v2.5.0 · May 2025</div>
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.2);border-radius:50px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.08em;margin-bottom:4px;">v2.5.1 · May 2025</div>
   <div class="wos-sub">Net worth, investments, income, expenses, debts, assets, budgets, goals — everything in one place.</div>
   <button class="google-btn" onclick="signInWithGoogle()">
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="">
@@ -737,7 +737,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="sidebar" id="sidebar">
     <div class="sb-header">
       <div class="sb-logo">WealthOS</div>
-      <div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.06em;">v2.5.0 · May 2025</div>
+      <div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.06em;">v2.5.1 · May 2025</div>
       <div class="sb-user">
         <img class="sb-avatar" id="sbAvatar" src="" alt="">
         <div>
@@ -819,7 +819,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="top-bar-right">
         <div style="font-size:12px;color:var(--muted);" id="topDate"></div>
         <div class="pill pill-teal" id="topSync">☁ Synced</div>
-        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;display:none;" id="versionBadge">v2.5.0</div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.06em;display:none;" id="versionBadge">v2.5.1</div>
         <button class="notif-btn" id="notifBtn" onclick="toggleNotifPanel()" title="Announcements">
           🔔<span class="notif-badge" id="notifBadge" style="display:none;">0</span>
         </button>
@@ -1446,13 +1446,21 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- FIREBASE -->
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut as fbSO}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut as fbSO}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyDBR27thvE2M_viPJqImzyRNysKlpgnvgQ",authDomain:"money-os-2e871.firebaseapp.com",projectId:"money-os-2e871",storageBucket:"money-os-2e871.firebasestorage.app",messagingSenderId:"1024122836266",appId:"1:1024122836266:web:9464e546bd06e19d30ba53"};
 const app=initializeApp(cfg);
 const auth=getAuth(app);
 const db=getFirestore(app);
 const prov=new GoogleAuthProvider();
+prov.setCustomParameters({prompt:'select_account'});
+
+// Handle redirect result on page load
+getRedirectResult(auth).then(result=>{
+  if(result?.user) console.log('✅ Redirect sign in successful');
+}).catch(e=>{
+  if(e.code!=='auth/no-current-user') console.error('Redirect error:',e);
+});
 let uid=null,st=null;
 function defState(){return{txns:[],ccs:[],dcs:[],cash:{AED:0,INR:0},debts:[],assets:[],goals:[],recurs:[],investments:[],budgets:[],subscriptions:[],splits:[],chits:[],futureExps:[],monthlyPlan:[],feedback:[],nwHistory:[],cats:{income:['💼 Salary','💻 Freelance','📈 Investment','🎁 Gift','💰 Other Income'],expense:['🛒 Groceries','🍽️ Food & Dining','🚗 Transport','💡 Utilities','🏥 Health','🎓 Education','🛍️ Shopping','🎬 Entertainment','✈️ Travel','🏠 Rent','📱 Subscriptions','💳 CC Payment','📦 Other']},
   onboarded:false,
@@ -1504,7 +1512,27 @@ onAuthStateChanged(auth,async u=>{
 window.signInWithGoogle=async()=>{
   document.getElementById('loadingScreen').style.display='flex';
   document.getElementById('spinText').textContent='Signing you in...';
-  try{await signInWithPopup(auth,prov);}catch(e){document.getElementById('loadingScreen').style.display='none';alert('Sign in failed. Please try again.');}
+  try{
+    // Try popup first
+    await signInWithPopup(auth,prov);
+  }catch(e){
+    console.log('Popup failed, trying redirect...',e.code);
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'){
+      // Fall back to redirect
+      try{
+        await signInWithRedirect(auth,prov);
+      }catch(e2){
+        document.getElementById('loadingScreen').style.display='none';
+        alert('Sign in failed: '+e2.message);
+      }
+    } else if(e.code==='auth/unauthorized-domain'){
+      document.getElementById('loadingScreen').style.display='none';
+      alert('⚠️ Domain not authorized.\n\nGo to Firebase Console → Authentication → Settings → Authorized Domains\n\nAdd: digidxb.github.io');
+    } else {
+      document.getElementById('loadingScreen').style.display='none';
+      alert('Sign in failed: '+e.message+'\n\nError code: '+e.code);
+    }
+  }
 };
 window.doSignOut=async()=>{if(confirm('Sign out?'))await fbSO(auth);};
 let svt=null;
