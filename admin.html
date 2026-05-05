@@ -377,6 +377,67 @@ window.clearAnns=async()=>{if(!confirm('Clear all?'))return;AA=[];await setDoc(d
 window.delAnn=async(i)=>{AA.splice(i,1);await setDoc(doc(db,'admin_announcements','latest'),{items:AA});renderAnns();};
 window.saveNote=async(uid)=>{const n=document.getElementById('noteInp').value.trim();await window.updateUF(uid,'adminNote',n);const u=AU.find(x=>x.id===uid);if(u)u.adminNote=n;filterU();alert('✅ Note saved');};
 window.toggleVIP=async(uid)=>{const u=AU.find(x=>x.id===uid);if(!u)return;const v=!u.isVip;await window.updateUF(uid,'isVip',v);u.isVip=v;filterU();closeUM();alert(v?'⭐ VIP marked':'VIP removed');};
+
+// ── BAN USER ──
+window.banUser=async(uid,isBanned)=>{
+  const u=AU.find(x=>x.id===uid);if(!u)return;
+  const newBan=!isBanned;
+  if(!confirm(newBan?`Ban ${u.name||'this user'}? They will see a banned message when they try to sign in.`:`Unban ${u.name||'this user'}?`))return;
+  await window.updateUF(uid,'isBanned',newBan);
+  u.isBanned=newBan;
+  filterU();closeUM();
+  alert(newBan?`🚫 ${u.name||'User'} has been banned.`:`✅ ${u.name||'User'} has been unbanned.`);
+};
+
+// ── SEND MESSAGE TO USER ──
+window.sendMsgToUser=(uid,name)=>{
+  closeUM();
+  // Switch to announce tab and pre-fill for that user
+  ST('announce',document.querySelectorAll('.tab')[5]);
+  document.getElementById('anT').value='Message for '+name;
+  document.getElementById('anB').value='';
+  document.getElementById('anB').focus();
+  // Show note
+  setTimeout(()=>alert('💡 Announcements are shown to ALL users.\n\nTo message '+name+' specifically, add their name in the title so they know it is for them.'),200);
+};
+
+// ── VIEW FINANCIAL SUMMARY ──
+window.viewFinSummary=(uid)=>{
+  const u=AU.find(x=>x.id===uid);if(!u)return;
+  const wrap=document.getElementById('finSummaryWrap');
+  const content=document.getElementById('finSummaryContent');
+  const d=u.appData||{};
+  if(!wrap||!content)return;
+
+  const fmt=(n)=>Math.round(n||0).toLocaleString();
+  const txns=d.txns||[];
+  const totalInc=txns.filter(t=>t.type==='income').reduce((s,t)=>s+(t.amt||0),0);
+  const totalExp=txns.filter(t=>t.type==='expense').reduce((s,t)=>s+(t.amt||0),0);
+  const assets=(d.assets||[]).reduce((s,a)=>s+(a.val||0),0);
+  const investments=(d.investments||[]).reduce((s,i)=>s+(i.current||i.amt||0),0);
+  const ccDebt=(d.ccs||[]).reduce((s,c)=>s+(c.bal||0),0);
+  const oweMe=(d.debts||[]).filter(x=>x.dir==='owe_me').reduce((s,x)=>s+(x.amt||0),0);
+  const iOwe=(d.debts||[]).filter(x=>x.dir==='i_owe').reduce((s,x)=>s+(x.amt||0),0);
+  const netWorth=assets+investments+(d.cash?.AED||0)+oweMe-ccDebt-iOwe;
+  const cur=d.currencies?.primary||'AED';
+
+  content.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Net Worth</span><strong style="color:var(--gold);">${cur} ${fmt(netWorth)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Total Income</span><strong style="color:var(--teal);">${cur} ${fmt(totalInc)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Total Expenses</span><strong style="color:var(--coral);">${cur} ${fmt(totalExp)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Assets</span><strong style="color:var(--blue);">${cur} ${fmt(assets)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Investments</span><strong style="color:var(--purple);">${cur} ${fmt(investments)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">CC Debt</span><strong style="color:var(--coral);">- ${cur} ${fmt(ccDebt)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Owed to them</span><strong style="color:var(--teal);">${cur} ${fmt(oweMe)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">They owe</span><strong style="color:var(--coral);">- ${cur} ${fmt(iOwe)}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Transactions</span><strong>${txns.length}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Subscriptions</span><strong>${(d.subscriptions||[]).length}</strong></div>
+      <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Goals</span><strong>${(d.goals||[]).length}</strong></div>
+    </div>`;
+
+  wrap.style.display='block';
+};
 </script>
 
 <script>
@@ -497,10 +558,20 @@ function openUM(uid){
     ${fbs.slice(0,2).map(f=>`<div style="background:var(--s2);border-radius:7px;padding:7px 9px;margin-bottom:5px;font-size:12px;color:var(--text2);">${'⭐'.repeat(f.rating||0)} ${f.text||f.feature||f.bug||'-'}</div>`).join('')}</div>`:''}
     <div style="margin-bottom:12px;"><div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;">Admin Note</div>
     <textarea id="noteInp" style="width:100%;background:var(--s2);border:1.5px solid var(--border2);border-radius:var(--r);padding:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:none;height:65px;" placeholder="Add a note...">${u.adminNote||''}</textarea></div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;">
       <button onclick="window.saveNote('${u.id}')" class="btn btn-g btn-sm">💾 Save Note</button>
-      <button onclick="window.toggleVIP('${u.id}')" class="btn ${u.isVip?'btn-c':'btn-t'} btn-sm">${u.isVip?'Remove VIP':'⭐ VIP'}</button>
+      <button onclick="window.toggleVIP('${u.id}')" class="btn ${u.isVip?'btn-c':'btn-t'} btn-sm">${u.isVip?'✕ VIP':'⭐ VIP'}</button>
+      <button onclick="window.banUser('${u.id}',${u.isBanned||false})" class="btn btn-c btn-sm">${u.isBanned?'🔓 Unban':'🚫 Ban'}</button>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;">
+      <button onclick="window.sendMsgToUser('${u.id}','${(u.name||'User').replace(/'/g,'')}')" class="btn btn-gh btn-sm">📢 Send Message</button>
+      <button onclick="window.viewFinSummary('${u.id}')" class="btn btn-gh btn-sm">💰 Financial Summary</button>
+    </div>
+    <div id="finSummaryWrap" style="display:none;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-top:4px;">
+      <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Financial Summary</div>
+      <div id="finSummaryContent"></div>
     </div>`;
+  document.getElementById('uMod').classList.add('open');
   document.getElementById('uMod').classList.add('open');
 }
 function closeUM(){document.getElementById('uMod').classList.remove('open');}

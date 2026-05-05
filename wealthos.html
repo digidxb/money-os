@@ -619,6 +619,117 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="spin-text" id="spinText">Loading WealthOS...</div>
 </div>
 
+
+<!-- ONBOARDING -->
+<div id="onboardingScreen" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;">
+  <div style="max-width:480px;margin:0 auto;padding:32px 24px 60px;">
+
+    <!-- Progress -->
+    <div style="display:flex;gap:6px;margin-bottom:32px;" id="onboardProgress">
+      <div style="flex:1;height:3px;border-radius:3px;background:var(--gold);" id="op1"></div>
+      <div style="flex:1;height:3px;border-radius:3px;background:var(--border);" id="op2"></div>
+      <div style="flex:1;height:3px;border-radius:3px;background:var(--border);" id="op3"></div>
+      <div style="flex:1;height:3px;border-radius:3px;background:var(--border);" id="op4"></div>
+      <div style="flex:1;height:3px;border-radius:3px;background:var(--border);" id="op5"></div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div id="ob-step1">
+      <div style="font-size:48px;margin-bottom:16px;">👋</div>
+      <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.2;">Welcome to<br><span style="color:var(--gold);">WealthOS</span></div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:32px;">Let's set up your personal finance OS in 2 minutes. Everything will be personalized just for you.</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">YOUR NAME</div>
+        <input id="ob-name" style="width:100%;background:var(--s2);border:1.5px solid var(--border2);border-radius:12px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;" placeholder="What should we call you?">
+      </div>
+      <button onclick="obNext(1)" style="width:100%;background:var(--gold);color:#05050d;border:none;padding:15px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;margin-top:8px;">Let's Go →</button>
+    </div>
+
+    <!-- Step 2: Primary Currency -->
+    <div id="ob-step2" style="display:none;">
+      <div style="font-size:48px;margin-bottom:16px;">💱</div>
+      <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;">Pick Your Currencies</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:24px;">All your amounts will be shown in these currencies. You can change this anytime.</div>
+
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--gold);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;">🥇 Primary Currency</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="ob-cur1"></div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;color:var(--text2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;">🥈 Secondary Currency</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="ob-cur2"></div>
+      </div>
+      <div style="margin-bottom:28px;">
+        <div style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;">🥉 Third Currency (Optional)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="ob-cur3"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;">
+        <button onclick="obBack(2)" style="flex:1;background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:14px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;">← Back</button>
+        <button onclick="obNext(2)" style="flex:2;background:var(--gold);color:#05050d;border:none;padding:14px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Module Selection -->
+    <div id="ob-step3" style="display:none;">
+      <div style="font-size:48px;margin-bottom:16px;">🎛️</div>
+      <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;">Choose Your Modules</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:24px;">Only see what you need. You can add or remove modules anytime in Settings.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:28px;" id="ob-modules"></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="obBack(3)" style="flex:1;background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:14px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;">← Back</button>
+        <button onclick="obNext(3)" style="flex:2;background:var(--gold);color:#05050d;border:none;padding:14px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Quick Guide -->
+    <div id="ob-step4" style="display:none;">
+      <div style="font-size:48px;margin-bottom:16px;">📖</div>
+      <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;">Quick Guide</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:24px;">Here's how WealthOS works in 30 seconds.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px;">
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;">
+          <div style="font-size:28px;flex-shrink:0;">📊</div>
+          <div><div style="font-weight:700;font-size:14px;margin-bottom:4px;">Dashboard</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Your complete financial picture. Net worth, insights, upcoming bills — all at a glance.</div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;">
+          <div style="font-size:28px;flex-shrink:0;">💸</div>
+          <div><div style="font-weight:700;font-size:14px;margin-bottom:4px;">Transactions</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Tap + to add income or expense. Pick a category. Everything auto-calculates.</div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;">
+          <div style="font-size:28px;flex-shrink:0;">💎</div>
+          <div><div style="font-weight:700;font-size:14px;margin-bottom:4px;">Net Worth</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Add your assets, investments, cards and debts. WealthOS calculates your true net worth.</div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;">
+          <div style="font-size:28px;flex-shrink:0;">📄</div>
+          <div><div style="font-weight:700;font-size:14px;margin-bottom:4px;">Reports & PDF</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Generate a complete financial report anytime. Download as PDF.</div></div>
+        </div>
+        <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;">
+          <div style="font-size:28px;flex-shrink:0;">⚙️</div>
+          <div><div style="font-weight:700;font-size:14px;margin-bottom:4px;">Settings</div><div style="font-size:12px;color:var(--text2);line-height:1.5;">Change currencies, add/remove modules, switch themes — all in Settings.</div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="obBack(4)" style="flex:1;background:var(--s2);border:1px solid var(--border2);color:var(--text2);padding:14px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;">← Back</button>
+        <button onclick="obNext(4)" style="flex:2;background:var(--gold);color:#05050d;border:none;padding:14px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Ready -->
+    <div id="ob-step5" style="display:none;text-align:center;">
+      <div style="font-size:64px;margin-bottom:20px;animation:bounce 1s infinite alternate;">🚀</div>
+      <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:10px;">You're all set!</div>
+      <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:12px;">Your WealthOS is personalized and ready. Start by adding your first transaction or checking your net worth.</div>
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:28px;text-align:left;">
+        <div style="font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Your Setup</div>
+        <div id="ob-summary"></div>
+      </div>
+      <button onclick="finishOnboarding()" style="width:100%;background:var(--gold);color:#05050d;border:none;padding:16px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;">Open WealthOS →</button>
+    </div>
+
+  </div>
+</div>
+
 <!-- APP -->
 <div id="appScreen">
 
@@ -677,6 +788,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <div class="nav-section-label">Community</div>
         <button class="nav-item" onclick="goTo('feedback',this)"><span class="nav-icon">💬</span>Feedback<span class="nav-dot"></span></button>
         <button class="nav-item" id="adminNavBtn" onclick="openAdminPanel()" style="display:none;"><span class="nav-icon">🔒</span>Admin Panel<span class="nav-dot"></span></button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Account</div>
+        <button class="nav-item" onclick="goTo('settings',this)"><span class="nav-icon">⚙️</span>Settings<span class="nav-dot"></span></button>
       </div>
     </div>
     <div class="sb-footer">
@@ -938,6 +1053,83 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <button onclick="submitFeedback()" style="width:100%;background:var(--gold);color:#05050d;border:none;padding:14px;border-radius:50px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;">Submit Feedback</button>
       </div>
       <div id="myFeedbackList"></div>
+    </div>
+
+
+    <!-- ══ SETTINGS ══ -->
+    <div class="sec" id="sec-settings">
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:4px;">Settings</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px;">Customize WealthOS to your needs.</div>
+
+      <!-- Currency Settings -->
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;">💱 Currencies</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Your selected currencies. Used everywhere in the app.</div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;" id="settingsCurDisplay"></div>
+        <button onclick="openCurrencySettings()" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:10px 18px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Syne',sans-serif;">Change Currencies</button>
+      </div>
+
+      <!-- Module Settings -->
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;">🎛️ Modules</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Turn modules on or off. Only show what you need.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="settingsModules"></div>
+      </div>
+
+      <!-- Theme Settings -->
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;">🎨 Theme</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Choose your color theme.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div onclick="setTheme('gold')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#e8b84b,#ff8c42);border:3px solid transparent;" id="td-gold"></div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600;">Gold</div>
+          </div>
+          <div onclick="setTheme('ocean')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#818cf8);border:3px solid transparent;" id="td-ocean"></div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600;">Ocean</div>
+          </div>
+          <div onclick="setTheme('rose')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#fb7185,#c084fc);border:3px solid transparent;" id="td-rose"></div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600;">Rose</div>
+          </div>
+          <div onclick="setTheme('forest')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#4ade80,#2dd4bf);border:3px solid transparent;" id="td-forest"></div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600;">Forest</div>
+          </div>
+          <div onclick="setTheme('black')" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#ffffff,#888888);border:3px solid transparent;" id="td-black"></div>
+            <div style="font-size:10px;color:var(--muted);font-weight:600;">Black</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guide -->
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;">📖 Guide</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Replay the onboarding guide anytime.</div>
+        <button onclick="replayOnboarding()" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:10px 18px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Syne',sans-serif;">▶ Replay Guide</button>
+      </div>
+
+      <!-- Live Rate -->
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;">💹 Exchange Rates</div>
+        <div id="settingsRates" style="font-size:13px;color:var(--text2);margin-bottom:10px;">Loading live rates...</div>
+        <button onclick="fetchAllRates()" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:10px 18px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Syne',sans-serif;">↻ Refresh Rates</button>
+      </div>
+
+      <!-- Account -->
+      <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:24px;">
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:14px;">👤 Account</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+          <img id="settingsAvatar" style="width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);" src="" alt="">
+          <div>
+            <div style="font-weight:600;font-size:14px;" id="settingsName"></div>
+            <div style="font-size:12px;color:var(--muted);" id="settingsEmail"></div>
+          </div>
+        </div>
+        <button onclick="doSignOut()" style="background:rgba(255,87,87,.1);border:1px solid rgba(255,87,87,.2);color:var(--coral);padding:10px 18px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;font-family:'Syne',sans-serif;">Sign Out</button>
+      </div>
     </div>
 
   </div><!-- end main -->
@@ -1262,7 +1454,11 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 const prov=new GoogleAuthProvider();
 let uid=null,st=null;
-function defState(){return{txns:[],ccs:[],dcs:[],cash:{AED:0,INR:0},debts:[],assets:[],goals:[],recurs:[],investments:[],budgets:[],subscriptions:[],splits:[],chits:[],futureExps:[],monthlyPlan:[],feedback:[],nwHistory:[],cats:{income:['💼 Salary','💻 Freelance','📈 Investment','🎁 Gift','💰 Other Income'],expense:['🛒 Groceries','🍽️ Food & Dining','🚗 Transport','💡 Utilities','🏥 Health','🎓 Education','🛍️ Shopping','🎬 Entertainment','✈️ Travel','🏠 Rent','📱 Subscriptions','💳 CC Payment','📦 Other']}};}
+function defState(){return{txns:[],ccs:[],dcs:[],cash:{AED:0,INR:0},debts:[],assets:[],goals:[],recurs:[],investments:[],budgets:[],subscriptions:[],splits:[],chits:[],futureExps:[],monthlyPlan:[],feedback:[],nwHistory:[],cats:{income:['💼 Salary','💻 Freelance','📈 Investment','🎁 Gift','💰 Other Income'],expense:['🛒 Groceries','🍽️ Food & Dining','🚗 Transport','💡 Utilities','🏥 Health','🎓 Education','🛍️ Shopping','🎬 Entertainment','✈️ Travel','🏠 Rent','📱 Subscriptions','💳 CC Payment','📦 Other']},
+  onboarded:false,
+  currencies:{primary:'AED',secondary:'INR',third:null},
+  activeModules:['dashboard','networth','transactions','calendar','cards','debts','assets','reports','settings','feedback'],
+  }}; }
 onAuthStateChanged(auth,async u=>{
   if(u){
     uid=u.uid;
@@ -1281,7 +1477,22 @@ onAuthStateChanged(auth,async u=>{
     document.getElementById('dbtDate').valueAsDate=new Date();
     const d=new Date();
     document.getElementById('topDate').textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+    // Check if user is banned
+    const adminSnap = await getDoc(doc(db,'admin_users',uid));
+    if(adminSnap.exists() && adminSnap.data().isBanned){
+      await fbOut(auth);
+      document.getElementById('loadingScreen').style.display='none';
+      document.getElementById('loginScreen').style.display='flex';
+      alert('⛔ Your account has been suspended. Please contact support.');
+      return;
+    }
     renderAll();
+    // Check if onboarding needed
+    if(!window.S.onboarded){
+      showOnboarding();
+    } else {
+      applySavedModules();
+    }
     // Track user in admin panel
     if(window.trackUserLogin) window.trackUserLogin(u);
   }else{
@@ -2356,7 +2567,7 @@ function exportPDF(){
 // ══════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════
-const pageTitles={dashboard:'Dashboard',networth:'Net Worth',transactions:'Transactions',calendar:'Calendar',budget:'Budget Planner',recurring:'Recurring',investments:'Investments',assets:'Assets',cards:'Cards & Cash',debts:'Debts',goals:'Savings Goals',subscriptions:'Subscriptions',split:'Split Expenses',tax:'Tax Tracker',chit:'Chit Fund',future:'Future Expense Planner',monthly:'Monthly Money Planner',zakat:'Zakat Calculator 🕌',feedback:'Feedback & Requests',admin:'Admin Panel 🔒',reports:'Reports & PDF'};
+const pageTitles={dashboard:'Dashboard',networth:'Net Worth',transactions:'Transactions',calendar:'Calendar',budget:'Budget Planner',recurring:'Recurring',investments:'Investments',assets:'Assets',cards:'Cards & Cash',debts:'Debts',goals:'Savings Goals',subscriptions:'Subscriptions',split:'Split Expenses',tax:'Tax Tracker',chit:'Chit Fund',future:'Future Expense Planner',monthly:'Monthly Money Planner',zakat:'Zakat Calculator 🕌',feedback:'Feedback & Requests',admin:'Admin Panel 🔒',reports:'Reports & PDF',settings:'Settings ⚙️'};
 function goTo(id,btn){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
@@ -3116,4 +3327,999 @@ document.body.appendChild(notifPanel);
 
 // Track time on page
 setInterval(trackSession, 60000);
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════
+// ALL SUPPORTED CURRENCIES
+// ════════════════════════════════════════════════════════
+const CURRENCIES = [
+  {code:'AED',flag:'🇦🇪',name:'UAE Dirham'},
+  {code:'INR',flag:'🇮🇳',name:'Indian Rupee'},
+  {code:'PKR',flag:'🇵🇰',name:'Pakistani Rupee'},
+  {code:'USD',flag:'🇺🇸',name:'US Dollar'},
+  {code:'EUR',flag:'🇪🇺',name:'Euro'},
+  {code:'GBP',flag:'🇬🇧',name:'British Pound'},
+  {code:'SAR',flag:'🇸🇦',name:'Saudi Riyal'},
+  {code:'QAR',flag:'🇶🇦',name:'Qatari Riyal'},
+  {code:'NGN',flag:'🇳🇬',name:'Nigerian Naira'},
+  {code:'KES',flag:'🇰🇪',name:'Kenyan Shilling'},
+  {code:'BDT',flag:'🇧🇩',name:'Bangladeshi Taka'},
+  {code:'PHP',flag:'🇵🇭',name:'Philippine Peso'},
+  {code:'LKR',flag:'🇱🇰',name:'Sri Lankan Rupee'},
+];
+
+// Live rates (base: AED)
+let RATES = {AED:1,INR:22.5,PKR:77,USD:0.272,EUR:0.251,GBP:0.215,SAR:1.02,QAR:0.99,NGN:422,KES:35,BDT:30,PHP:15.8,LKR:82};
+
+async function fetchAllRates(){
+  try{
+    const r = await fetch('https://api.exchangerate-api.com/v4/latest/AED');
+    const d = await r.json();
+    if(d.rates){
+      Object.keys(RATES).forEach(k=>{ if(d.rates[k]) RATES[k]=d.rates[k]; });
+      liveRate = RATES.INR;
+      console.log('✅ Live rates loaded');
+      renderSettingsRates();
+    }
+  }catch(e){ console.log('Rate fetch failed, using fallback rates'); }
+}
+
+function renderSettingsRates(){
+  const S=window.S;
+  const curs=[S.currencies?.primary,S.currencies?.secondary,S.currencies?.third].filter(Boolean);
+  const el=document.getElementById('settingsRates');
+  if(!el) return;
+  el.innerHTML=curs.map(c=>`
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:13px;color:var(--text2);">${CURRENCIES.find(x=>x.code===c)?.flag||''} ${c}</span>
+      <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--gold);">1 AED = ${RATES[c]?.toFixed(c==='AED'?0:2)||'—'} ${c}</span>
+    </div>`).join('')+'<div style="font-size:10px;color:var(--muted);margin-top:8px;">Rates updated: '+new Date().toLocaleTimeString()+'</div>';
+}
+
+// Convert any amount to primary currency
+function toP(amt, fromCur){
+  const S=window.S;
+  const primary=S.currencies?.primary||'AED';
+  if(fromCur===primary) return amt;
+  // Convert to AED first, then to primary
+  const inAED = fromCur==='AED' ? amt : amt / (RATES[fromCur]||1);
+  return primary==='AED' ? inAED : inAED * (RATES[primary]||1);
+}
+
+function getPrimary(){ return window.S?.currencies?.primary||'AED'; }
+function getSecondary(){ return window.S?.currencies?.secondary||'INR'; }
+function getThird(){ return window.S?.currencies?.third||null; }
+
+// Override fmt to use primary currency
+function fmt(amt, cur){
+  const display = cur||getPrimary();
+  return display+' '+Math.abs(parseFloat(amt)||0).toLocaleString('en',{maximumFractionDigits:0});
+}
+function fmtN(n){ return Math.round(n).toLocaleString(); }
+
+// ════════════════════════════════════════════════════════
+// ALL MODULES DEFINITION
+// ════════════════════════════════════════════════════════
+const ALL_MODULES = [
+  {id:'dashboard',icon:'📊',name:'Dashboard',required:true,defaultOn:true},
+  {id:'networth',icon:'💎',name:'Net Worth',required:false,defaultOn:true},
+  {id:'transactions',icon:'💸',name:'Transactions',required:true,defaultOn:true},
+  {id:'calendar',icon:'📅',name:'Calendar',required:false,defaultOn:true},
+  {id:'budget',icon:'🎯',name:'Budget Planner',required:false,defaultOn:false},
+  {id:'recurring',icon:'🔄',name:'Recurring',required:false,defaultOn:false},
+  {id:'investments',icon:'📈',name:'Investments',required:false,defaultOn:false},
+  {id:'assets',icon:'🏠',name:'Assets',required:false,defaultOn:true},
+  {id:'cards',icon:'💳',name:'Cards & Cash',required:false,defaultOn:true},
+  {id:'debts',icon:'🤝',name:'Debts',required:false,defaultOn:true},
+  {id:'goals',icon:'🏆',name:'Goals',required:false,defaultOn:false},
+  {id:'subscriptions',icon:'📱',name:'Subscriptions',required:false,defaultOn:false},
+  {id:'split',icon:'🍽️',name:'Split Expenses',required:false,defaultOn:false},
+  {id:'chit',icon:'🎰',name:'Chit Fund',required:false,defaultOn:false},
+  {id:'zakat',icon:'🕌',name:'Zakat',required:false,defaultOn:false},
+  {id:'future',icon:'🔮',name:'Future Planner',required:false,defaultOn:false},
+  {id:'monthly',icon:'📅',name:'Monthly Planner',required:false,defaultOn:false},
+  {id:'tax',icon:'🧾',name:'Tax Tracker',required:false,defaultOn:false},
+  {id:'reports',icon:'📋',name:'Reports & PDF',required:true,defaultOn:true},
+  {id:'feedback',icon:'💬',name:'Feedback',required:false,defaultOn:true},
+  {id:'settings',icon:'⚙️',name:'Settings',required:true,defaultOn:true},
+];
+
+function getActiveModules(){
+  return window.S?.activeModules || ALL_MODULES.filter(m=>m.defaultOn).map(m=>m.id);
+}
+
+function applySavedModules(){
+  const active = getActiveModules();
+  // Update sidebar visibility
+  document.querySelectorAll('.nav-item').forEach(btn=>{
+    const onclick = btn.getAttribute('onclick')||'';
+    const match = onclick.match(/goTo\('([^']+)'/);
+    if(match){
+      const id=match[1];
+      const mod=ALL_MODULES.find(m=>m.id===id);
+      if(mod&&!mod.required){
+        btn.style.display = active.includes(id)?'flex':'none';
+      }
+    }
+  });
+  renderSettingsModules();
+  renderSettingsCurrencies();
+}
+
+function toggleModule(id){
+  const S=window.S;
+  if(!S.activeModules) S.activeModules=getActiveModules();
+  const mod=ALL_MODULES.find(m=>m.id===id);
+  if(mod?.required) return; // Can't toggle required modules
+  if(S.activeModules.includes(id)){
+    S.activeModules=S.activeModules.filter(x=>x!==id);
+  } else {
+    S.activeModules.push(id);
+  }
+  save();
+  applySavedModules();
+}
+
+function renderSettingsModules(){
+  const active=getActiveModules();
+  const el=document.getElementById('settingsModules');
+  if(!el) return;
+  el.innerHTML=ALL_MODULES.filter(m=>!m.required).map(m=>`
+    <div onclick="toggleModule('${m.id}')"
+      style="background:${active.includes(m.id)?'rgba(232,184,75,.1)':'var(--s3)'};
+      border:1.5px solid ${active.includes(m.id)?'var(--gold)':'var(--border)'};
+      border-radius:var(--r);padding:12px;cursor:pointer;transition:all .2s;
+      display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">${m.icon}</span>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;">${m.name}</div>
+      </div>
+      <div style="width:20px;height:20px;border-radius:50%;border:2px solid ${active.includes(m.id)?'var(--gold)':'var(--border2)'};
+        background:${active.includes(m.id)?'var(--gold)':'transparent'};
+        display:flex;align-items:center;justify-content:center;font-size:11px;color:#05050d;flex-shrink:0;">
+        ${active.includes(m.id)?'✓':''}
+      </div>
+    </div>`).join('');
+}
+
+function renderSettingsCurrencies(){
+  const S=window.S;
+  const cur=S.currencies||{primary:'AED',secondary:'INR',third:null};
+  const el=document.getElementById('settingsCurDisplay');
+  if(!el) return;
+  const getCur=(c)=>CURRENCIES.find(x=>x.code===c);
+  el.innerHTML=[
+    {label:'🥇 Primary',code:cur.primary},
+    {label:'🥈 Secondary',code:cur.secondary},
+    cur.third?{label:'🥉 Third',code:cur.third}:null,
+  ].filter(Boolean).map(c=>`
+    <div style="background:var(--s3);border:1px solid var(--border2);border-radius:10px;padding:8px 14px;text-align:center;">
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin-bottom:4px;">${c.label}</div>
+      <div style="font-size:16px;">${getCur(c.code)?.flag||''}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--gold);">${c.code}</div>
+    </div>`).join('');
+}
+
+// Settings page account info
+function renderSettingsAccount(){
+  const avatar=document.getElementById('settingsAvatar');
+  const name=document.getElementById('settingsName');
+  const email=document.getElementById('settingsEmail');
+  if(avatar) avatar.src=document.getElementById('sbAvatar').src;
+  if(name) name.textContent=document.getElementById('sbName').textContent;
+}
+
+// ════════════════════════════════════════════════════════
+// ONBOARDING SYSTEM
+// ════════════════════════════════════════════════════════
+let obStep=1;
+let obData={name:'',cur1:'AED',cur2:'INR',cur3:null,modules:[]};
+
+function showOnboarding(){
+  document.getElementById('onboardingScreen').style.display='block';
+  obStep=1;
+  obData.modules=ALL_MODULES.filter(m=>m.defaultOn).map(m=>m.id);
+  renderObCurrencies();
+  renderObModules();
+  showObStep(1);
+}
+
+function replayOnboarding(){
+  showOnboarding();
+}
+
+function showObStep(n){
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById('ob-step'+i);
+    if(el) el.style.display=i===n?'block':'none';
+    const p=document.getElementById('op'+i);
+    if(p) p.style.background=i<=n?'var(--gold)':'var(--border)';
+  }
+  obStep=n;
+}
+
+function obNext(from){
+  if(from===1){
+    const name=document.getElementById('ob-name').value.trim();
+    if(!name){document.getElementById('ob-name').focus();return;}
+    obData.name=name;
+    showObStep(2);
+  } else if(from===2){
+    if(!obData.cur1){alert('Please select at least a primary currency.');return;}
+    showObStep(3);
+  } else if(from===3){
+    if(!obData.modules.length){alert('Please select at least one module.');return;}
+    showObStep(4);
+  } else if(from===4){
+    showObStep(5);
+    renderObSummary();
+  }
+}
+
+function obBack(from){
+  showObStep(from-1);
+}
+
+function renderObCurrencies(){
+  // Primary
+  document.getElementById('ob-cur1').innerHTML=CURRENCIES.map(c=>`
+    <div onclick="setObCur(1,'${c.code}',this)"
+      style="background:${obData.cur1===c.code?'rgba(232,184,75,.15)':'var(--s2)'};
+      border:1.5px solid ${obData.cur1===c.code?'var(--gold)':'var(--border)'};
+      border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;">
+      <div style="font-size:20px;">${c.flag}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;margin-top:4px;color:${obData.cur1===c.code?'var(--gold)':'var(--text)'};">${c.code}</div>
+    </div>`).join('');
+
+  // Secondary
+  document.getElementById('ob-cur2').innerHTML=CURRENCIES.map(c=>`
+    <div onclick="setObCur(2,'${c.code}',this)"
+      style="background:${obData.cur2===c.code?'rgba(136,136,170,.1)':'var(--s2)'};
+      border:1.5px solid ${obData.cur2===c.code?'var(--text2)':'var(--border)'};
+      border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;">
+      <div style="font-size:20px;">${c.flag}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;margin-top:4px;color:${obData.cur2===c.code?'var(--text)':'var(--text2)'};">${c.code}</div>
+    </div>`).join('');
+
+  // Third (with None option)
+  document.getElementById('ob-cur3').innerHTML=[{code:'NONE',flag:'✖️',name:'None'},...CURRENCIES].map(c=>`
+    <div onclick="setObCur(3,'${c.code}',this)"
+      style="background:${obData.cur3===c.code||(!obData.cur3&&c.code==='NONE')?'rgba(68,68,102,.2)':'var(--s2)'};
+      border:1.5px solid ${obData.cur3===c.code||(!obData.cur3&&c.code==='NONE')?'var(--muted)':'var(--border)'};
+      border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;">
+      <div style="font-size:20px;">${c.flag}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;margin-top:4px;color:var(--muted);">${c.code==='NONE'?'None':c.code}</div>
+    </div>`).join('');
+}
+
+function setObCur(slot,code,el){
+  if(slot===1) obData.cur1=code;
+  else if(slot===2) obData.cur2=code;
+  else { obData.cur3=code==='NONE'?null:code; }
+  renderObCurrencies();
+}
+
+function renderObModules(){
+  document.getElementById('ob-modules').innerHTML=ALL_MODULES.filter(m=>!m.required).map(m=>`
+    <div onclick="toggleObModule('${m.id}',this)"
+      style="background:${obData.modules.includes(m.id)?'rgba(232,184,75,.1)':'var(--s2)'};
+      border:1.5px solid ${obData.modules.includes(m.id)?'var(--gold)':'var(--border)'};
+      border-radius:var(--r);padding:12px;cursor:pointer;transition:all .2s;
+      display:flex;align-items:center;gap:8px;">
+      <span style="font-size:20px;">${m.icon}</span>
+      <div style="flex:1;font-size:13px;font-weight:600;">${m.name}</div>
+      <div style="width:18px;height:18px;border-radius:50%;
+        border:2px solid ${obData.modules.includes(m.id)?'var(--gold)':'var(--border2)'};
+        background:${obData.modules.includes(m.id)?'var(--gold)':'transparent'};
+        display:flex;align-items:center;justify-content:center;font-size:10px;color:#05050d;flex-shrink:0;">
+        ${obData.modules.includes(m.id)?'✓':''}
+      </div>
+    </div>`).join('');
+}
+
+function toggleObModule(id, el){
+  if(obData.modules.includes(id)){
+    obData.modules=obData.modules.filter(x=>x!==id);
+  } else {
+    obData.modules.push(id);
+  }
+  renderObModules();
+}
+
+function renderObSummary(){
+  const cur2=obData.cur2?` + ${obData.cur2}`:'';
+  const cur3=obData.cur3?` + ${obData.cur3}`:'';
+  document.getElementById('ob-summary').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:16px;">👤</span>
+        <span style="font-size:13px;color:var(--text2);">Name: <strong style="color:var(--text);">${obData.name}</strong></span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="font-size:16px;">💱</span>
+        <span style="font-size:13px;color:var(--text2);">Currencies: <strong style="color:var(--gold);">${obData.cur1}${cur2}${cur3}</strong></span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:16px;">🎛️</span>
+        <span style="font-size:13px;color:var(--text2);">Modules: <strong style="color:var(--text);">${obData.modules.length} selected</strong></span>
+      </div>
+    </div>`;
+}
+
+function finishOnboarding(){
+  const S=window.S;
+  S.onboarded=true;
+  S.currencies={primary:obData.cur1,secondary:obData.cur2,third:obData.cur3};
+  // Combine required + selected modules
+  const required=ALL_MODULES.filter(m=>m.required).map(m=>m.id);
+  S.activeModules=[...new Set([...required,...obData.modules])];
+  save();
+  document.getElementById('onboardingScreen').style.display='none';
+  applySavedModules();
+  fetchAllRates();
+  // Welcome message
+  setTimeout(()=>{
+    const banner=document.getElementById('announceBanner');
+    const text=document.getElementById('announceText');
+    if(banner&&text){
+      text.innerHTML=`<strong>Welcome ${obData.name}! 🎉</strong> Your WealthOS is ready. Start by adding your first transaction.`;
+      banner.classList.add('show');
+      setTimeout(()=>banner.classList.remove('show'),5000);
+    }
+  },500);
+}
+
+function openCurrencySettings(){
+  // Re-open onboarding at step 2
+  document.getElementById('onboardingScreen').style.display='block';
+  const S=window.S;
+  obData.cur1=S.currencies?.primary||'AED';
+  obData.cur2=S.currencies?.secondary||'INR';
+  obData.cur3=S.currencies?.third||null;
+  renderObCurrencies();
+  showObStep(2);
+  // Override next button to save and close
+  const nextBtn=document.querySelector('#ob-step2 button:last-child');
+  if(nextBtn){
+    nextBtn.textContent='Save Currencies ✓';
+    nextBtn.onclick=()=>{
+      window.S.currencies={primary:obData.cur1,secondary:obData.cur2,third:obData.cur3};
+      save();
+      document.getElementById('onboardingScreen').style.display='none';
+      applySavedModules();
+      fetchAllRates();
+      // Restore next button
+      nextBtn.textContent='Next →';
+      nextBtn.onclick=()=>obNext(2);
+    };
+  }
+}
+
+// Update goTo to render settings page
+const _origGoTo = window.goTo;
+window.goTo = function(id, btn){
+  if(id==='settings'){
+    renderSettingsModules();
+    renderSettingsCurrencies();
+    renderSettingsAccount();
+    renderSettingsRates();
+  }
+  if(_origGoTo) _origGoTo(id, btn);
+  else {
+    document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+    document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+    const sec=document.getElementById('sec-'+id);
+    if(sec) sec.classList.add('on');
+    if(btn) btn.classList.add('active');
+    const titles={dashboard:'Dashboard',settings:'Settings ⚙️',reports:'Reports & PDF'};
+    const pt=document.getElementById('pageTitle');
+    if(pt) pt.textContent=titles[id]||id.charAt(0).toUpperCase()+id.slice(1);
+    window.scrollTo(0,0);
+  }
+};
+
+// Fetch rates on load
+fetchAllRates();
+
+// Apply modules after app loads
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    if(window.S&&window.S.onboarded) applySavedModules();
+  }, 1000);
+});
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════
+// UNIVERSAL EDIT SYSTEM
+// ════════════════════════════════════════════════════════
+
+// ── EDIT MODAL HTML ──
+(function(){
+  const editModal = document.createElement('div');
+  editModal.id = 'editModal';
+  editModal.className = 'modal-overlay';
+  editModal.innerHTML = `
+    <div class="modal-sheet" onclick="event.stopPropagation()" style="max-height:85vh;overflow-y:auto;">
+      <div class="modal-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div class="modal-title" id="editModalTitle" style="margin-bottom:0;">Edit</div>
+        <button onclick="closeEditModal()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:22px;padding:0;">×</button>
+      </div>
+      <div id="editModalBody"></div>
+      <button class="btn-primary btn-full" id="editSaveBtn" onclick="saveEdit()" style="margin-top:16px;">Save Changes</button>
+      <button class="btn-ghost btn-full" onclick="closeEditModal()" style="margin-top:8px;">Cancel</button>
+    </div>`;
+  editModal.onclick = closeEditModal;
+  document.body.appendChild(editModal);
+})();
+
+let editContext = null; // {type, index, item}
+
+function openEditModal(type, index){
+  const S = window.S;
+  editContext = {type, index};
+  const modal = document.getElementById('editModal');
+  const title = document.getElementById('editModalTitle');
+  const body = document.getElementById('editModalBody');
+
+  if(type === 'txn'){
+    const t = S.txns[index];
+    title.textContent = 'Edit Transaction';
+    body.innerHTML = `
+      <div class="form-group">
+        <div class="form-label">Type</div>
+        <div class="type-row">
+          <button class="type-btn ${t.type==='expense'?'ex-on':''}" id="eTBtnEx" onclick="setETtype('expense')">📤 Expense</button>
+          <button class="type-btn ${t.type==='income'?'in-on':''}" id="eTBtnIn" onclick="setETtype('income')">📥 Income</button>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Description</div><input class="form-input" id="eTName" value="${t.name||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Amount</div><input class="form-input" id="eTAmt" type="number" value="${t.amt||t.amount||0}"></div>
+        <div class="form-group"><div class="form-label">Currency</div>
+          <div class="cur-row"><button class="cur-btn ${t.cur==='AED'?'on':''}" id="eCurAED" onclick="setECur('AED')">AED</button><button class="cur-btn ${t.cur==='INR'?'on':''}" id="eCurINR" onclick="setECur('INR')">INR</button></div>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Category</div><input class="form-input" id="eTCat" value="${t.cat||''}"></div>
+      <div class="form-group"><div class="form-label">Date</div><input class="form-input" id="eTDate" type="date" value="${t.date||''}"></div>
+      <div class="form-group"><div class="form-label">Note</div><input class="form-input" id="eTNote" value="${t.note||''}"></div>`;
+  } else if(type === 'inv'){
+    const inv = S.investments[index];
+    title.textContent = 'Edit Investment';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Name</div><input class="form-input" id="eIName" value="${inv.name||''}"></div>
+      <div class="form-group"><div class="form-label">Type</div><input class="form-input" id="eIType" value="${inv.type||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Amount Invested</div><input class="form-input" id="eIAmt" type="number" value="${inv.amt||0}"></div>
+        <div class="form-group"><div class="form-label">${inv.returnType==='monthly'?'Monthly Return':'Current Value'}</div><input class="form-input" id="eIReturn" type="number" value="${inv.current||inv.return||0}"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Return Type</div>
+        <div class="type-row">
+          <button class="type-btn ${inv.returnType==='monthly'?'in-on':''}" id="eIRMonthly" onclick="setEIReturn('monthly')">Monthly Fixed</button>
+          <button class="type-btn ${inv.returnType==='market'?'in-on':''}" id="eIRMarket" onclick="setEIReturn('market')">Market Value</button>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Date Invested</div><input class="form-input" id="eIDate" type="date" value="${inv.date||''}"></div>
+      <div class="form-group"><div class="form-label">Note</div><input class="form-input" id="eINote" value="${inv.note||''}"></div>
+      <div class="form-group"><div class="form-label">Currency</div>
+        <div class="cur-row"><button class="cur-btn ${inv.cur==='AED'?'on':''}" id="eICurAED" onclick="setEICur('AED')">AED</button><button class="cur-btn ${inv.cur==='INR'?'on':''}" id="eICurINR" onclick="setEICur('INR')">INR</button></div>
+      </div>`;
+  } else if(type === 'cc'){
+    const c = S.ccs[index];
+    title.textContent = 'Edit Credit Card';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Bank Name</div><input class="form-input" id="eCCBank" value="${c.bank||''}"></div>
+      <div class="form-group"><div class="form-label">Last 4 Digits</div><input class="form-input" id="eCCNum" value="${c.num||''}" maxlength="4"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Credit Limit</div><input class="form-input" id="eCCLimit" type="number" value="${c.limit||0}"></div>
+        <div class="form-group"><div class="form-label">Balance Due</div><input class="form-input" id="eCCBal" type="number" value="${c.bal||0}"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Due Date (day of month)</div><input class="form-input" id="eCCDue" type="number" value="${c.due||15}" min="1" max="31"></div>
+      <div class="form-group"><div class="form-label">Currency</div>
+        <div class="cur-row"><button class="cur-btn ${c.cur==='AED'?'on':''}" id="eCCCurAED" onclick="setECCCur('AED')">AED</button><button class="cur-btn ${c.cur==='INR'?'on':''}" id="eCCCurINR" onclick="setECCCur('INR')">INR</button></div>
+      </div>`;
+  } else if(type === 'dc'){
+    const d = S.dcs[index];
+    title.textContent = 'Edit Debit Card';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Bank Name</div><input class="form-input" id="eDCBank" value="${d.bank||''}"></div>
+      <div class="form-group"><div class="form-label">Balance</div><input class="form-input" id="eDCBal" type="number" value="${d.bal||0}"></div>
+      <div class="form-group"><div class="form-label">Currency</div>
+        <div class="cur-row"><button class="cur-btn ${d.cur==='AED'?'on':''}" id="eDCCurAED" onclick="setEDCCur('AED')">AED</button><button class="cur-btn ${d.cur==='INR'?'on':''}" id="eDCCurINR" onclick="setEDCCur('INR')">INR</button></div>
+      </div>`;
+  } else if(type === 'asset'){
+    const a = S.assets[index];
+    title.textContent = 'Edit Asset';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Asset Name</div><input class="form-input" id="eAName" value="${a.name||''}"></div>
+      <div class="form-group"><div class="form-label">Type</div><input class="form-input" id="eAType" value="${a.type||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Current Value</div><input class="form-input" id="eAVal" type="number" value="${a.val||0}"></div>
+        <div class="form-group"><div class="form-label">Purchase Price</div><input class="form-input" id="eABought" type="number" value="${a.bought||0}"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Currency</div>
+        <div class="cur-row"><button class="cur-btn ${a.cur==='AED'?'on':''}" id="eACurAED" onclick="setEACur('AED')">AED</button><button class="cur-btn ${a.cur==='INR'?'on':''}" id="eACurINR" onclick="setEACur('INR')">INR</button></div>
+      </div>`;
+  } else if(type === 'debt'){
+    const d = S.debts[index];
+    title.textContent = 'Edit Debt';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Person's Name</div><input class="form-input" id="eDName" value="${d.name||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Amount</div><input class="form-input" id="eDAmt" type="number" value="${d.amt||0}"></div>
+        <div class="form-group"><div class="form-label">Currency</div>
+          <div class="cur-row"><button class="cur-btn ${d.cur==='AED'?'on':''}" id="eDCurAED" onclick="setEDCur('AED')">AED</button><button class="cur-btn ${d.cur==='INR'?'on':''}" id="eDCurINR" onclick="setEDCur('INR')">INR</button></div>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Date</div><input class="form-input" id="eDDate" type="date" value="${d.date||''}"></div>
+      <div class="form-group"><div class="form-label">Note</div><input class="form-input" id="eDNote" value="${d.note||''}"></div>`;
+  } else if(type === 'goal'){
+    const g = S.goals[index];
+    title.textContent = 'Edit Goal';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Goal Name</div><input class="form-input" id="eGName" value="${g.name||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Target Amount</div><input class="form-input" id="eGTarget" type="number" value="${g.target||0}"></div>
+        <div class="form-group"><div class="form-label">Saved So Far</div><input class="form-input" id="eGCurrent" type="number" value="${g.current||0}"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Target Date</div><input class="form-input" id="eGDate" type="date" value="${g.date||''}"></div>
+      <div class="form-group"><div class="form-label">Currency</div>
+        <div class="cur-row"><button class="cur-btn ${g.cur==='AED'?'on':''}" id="eGCurAED" onclick="setEGCur('AED')">AED</button><button class="cur-btn ${g.cur==='INR'?'on':''}" id="eGCurINR" onclick="setEGCur('INR')">INR</button></div>
+      </div>`;
+  } else if(type === 'sub'){
+    const s = S.subscriptions[index];
+    title.textContent = 'Edit Subscription';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Service Name</div><input class="form-input" id="eSName" value="${s.name||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Monthly Cost</div><input class="form-input" id="eSAmt" type="number" value="${s.amt||0}"></div>
+        <div class="form-group"><div class="form-label">Renewal Day</div><input class="form-input" id="eSDay" type="number" value="${s.day||1}" min="1" max="31"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Category</div><input class="form-input" id="eSCat" value="${s.cat||''}"></div>
+      <div class="form-group"><div class="form-label">Currency</div>
+        <div class="cur-row"><button class="cur-btn ${s.cur==='AED'?'on':''}" id="eSCurAED" onclick="setESCur('AED')">AED</button><button class="cur-btn ${s.cur==='INR'?'on':''}" id="eSCurINR" onclick="setESCur('INR')">INR</button></div>
+      </div>`;
+  } else if(type === 'recur'){
+    const r = S.recurs[index];
+    title.textContent = 'Edit Recurring';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Name</div><input class="form-input" id="eRName" value="${r.name||''}"></div>
+      <div class="form-group"><div class="form-label">Type</div>
+        <div class="type-row">
+          <button class="type-btn ${r.type==='expense'?'ex-on':''}" id="eRBtnEx" onclick="setERType('expense')">📤 Expense</button>
+          <button class="type-btn ${r.type==='income'?'in-on':''}" id="eRBtnIn" onclick="setERType('income')">📥 Income</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Amount</div><input class="form-input" id="eRAmt" type="number" value="${r.amt||0}"></div>
+        <div class="form-group"><div class="form-label">Day of Month</div><input class="form-input" id="eRDay" type="number" value="${r.day||1}" min="1" max="31"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Currency</div>
+        <div class="cur-row"><button class="cur-btn ${r.cur==='AED'?'on':''}" id="eRCurAED" onclick="setERCur('AED')">AED</button><button class="cur-btn ${r.cur==='INR'?'on':''}" id="eRCurINR" onclick="setERCur('INR')">INR</button></div>
+      </div>`;
+  } else if(type === 'chit'){
+    const c = S.chits[index];
+    title.textContent = 'Edit Chit Fund';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Name</div><input class="form-input" id="eCHName" value="${c.name||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Total Chit Value</div><input class="form-input" id="eCHTotal" type="number" value="${c.total||0}"></div>
+        <div class="form-group"><div class="form-label">Monthly Contribution</div><input class="form-input" id="eCHMonthly" type="number" value="${c.monthly||0}"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Total Members</div><input class="form-input" id="eCHMembers" type="number" value="${c.members||0}"></div>
+        <div class="form-group"><div class="form-label">Your Payout Month</div><input class="form-input" id="eCHPayout" type="number" value="${c.payoutMonth||0}"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Start Date</div><input class="form-input" id="eCHStart" type="date" value="${c.start||''}"></div>
+      <div class="form-group"><div class="form-label">Notes</div><input class="form-input" id="eCHNote" value="${c.note||''}"></div>`;
+  } else if(type === 'future'){
+    const f = S.futureExps[index];
+    title.textContent = 'Edit Future Expense';
+    body.innerHTML = `
+      <div class="form-group"><div class="form-label">Description</div><input class="form-input" id="eFName" value="${f.name||''}"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group"><div class="form-label">Amount</div><input class="form-input" id="eFAmt" type="number" value="${f.amt||0}"></div>
+        <div class="form-group"><div class="form-label">Month</div><input class="form-input" id="eFDate" type="month" value="${f.date||''}"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Category</div><input class="form-input" id="eFCat" value="${f.cat||''}"></div>
+      <div class="form-group"><div class="form-label">Notes</div><input class="form-input" id="eFNote" value="${f.note||''}"></div>`;
+  }
+
+  // Add delete button
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'btn-ghost btn-full';
+  deleteBtn.style.cssText = 'margin-top:8px;color:var(--coral);border-color:rgba(255,87,87,.3);';
+  deleteBtn.textContent = '🗑️ Delete';
+  deleteBtn.onclick = () => deleteItem(type, index);
+  document.getElementById('editModalBody').appendChild(deleteBtn);
+
+  modal.classList.add('open');
+}
+
+function closeEditModal(){
+  document.getElementById('editModal').classList.remove('open');
+  editContext = null;
+}
+
+// Currency setters for edit modal
+let eCur='AED', eICur='AED', eCCCur='AED', eDCCur2='AED', eACur='AED', eDCur='AED', eGCur='AED', eSCur2='AED', eRCur='AED';
+let eTtype='expense', eIReturnType='monthly', eRType='expense';
+
+function setETtype(t){eTtype=t;document.getElementById('eTBtnEx').className='type-btn'+(t==='expense'?' ex-on':'');document.getElementById('eTBtnIn').className='type-btn'+(t==='income'?' in-on':'');}
+function setECur(c){eCur=c;document.getElementById('eCurAED').classList.toggle('on',c==='AED');document.getElementById('eCurINR').classList.toggle('on',c==='INR');}
+function setEICur(c){eICur=c;document.getElementById('eICurAED').classList.toggle('on',c==='AED');document.getElementById('eICurINR').classList.toggle('on',c==='INR');}
+function setEIReturn(t){eIReturnType=t;document.getElementById('eIRMonthly').className='type-btn'+(t==='monthly'?' in-on':'');document.getElementById('eIRMarket').className='type-btn'+(t==='market'?' in-on':'');}
+function setECCCur(c){eCCCur=c;document.getElementById('eCCCurAED').classList.toggle('on',c==='AED');document.getElementById('eCCCurINR').classList.toggle('on',c==='INR');}
+function setEDCCur(c){eDCCur2=c;document.getElementById('eDCCurAED').classList.toggle('on',c==='AED');document.getElementById('eDCCurINR').classList.toggle('on',c==='INR');}
+function setEACur(c){eACur=c;document.getElementById('eACurAED').classList.toggle('on',c==='AED');document.getElementById('eACurINR').classList.toggle('on',c==='INR');}
+function setEDCur(c){eDCur=c;document.getElementById('eDCurAED').classList.toggle('on',c==='AED');document.getElementById('eDCurINR').classList.toggle('on',c==='INR');}
+function setEGCur(c){eGCur=c;document.getElementById('eGCurAED').classList.toggle('on',c==='AED');document.getElementById('eGCurINR').classList.toggle('on',c==='INR');}
+function setESCur(c){eSCur2=c;document.getElementById('eSCurAED').classList.toggle('on',c==='AED');document.getElementById('eSCurINR').classList.toggle('on',c==='INR');}
+function setERCur(c){eRCur=c;document.getElementById('eRCurAED').classList.toggle('on',c==='AED');document.getElementById('eRCurINR').classList.toggle('on',c==='INR');}
+function setERType(t){eRType=t;document.getElementById('eRBtnEx').className='type-btn'+(t==='expense'?' ex-on':'');document.getElementById('eRBtnIn').className='type-btn'+(t==='income'?' in-on':'');}
+
+// ── SAVE EDIT ──
+function saveEdit(){
+  const {type, index} = editContext;
+  const S = window.S;
+
+  if(type === 'txn'){
+    S.txns[index] = {...S.txns[index],
+      name: document.getElementById('eTName').value.trim(),
+      amt: parseFloat(document.getElementById('eTAmt').value)||0,
+      cur: eCur, type: eTtype,
+      cat: document.getElementById('eTCat').value.trim(),
+      date: document.getElementById('eTDate').value,
+      note: document.getElementById('eTNote').value.trim(),
+    };
+  } else if(type === 'inv'){
+    S.investments[index] = {...S.investments[index],
+      name: document.getElementById('eIName').value.trim(),
+      type: document.getElementById('eIType').value.trim(),
+      amt: parseFloat(document.getElementById('eIAmt').value)||0,
+      current: parseFloat(document.getElementById('eIReturn').value)||0,
+      returnType: eIReturnType,
+      cur: eICur,
+      date: document.getElementById('eIDate').value,
+      note: document.getElementById('eINote').value.trim(),
+    };
+  } else if(type === 'cc'){
+    S.ccs[index] = {...S.ccs[index],
+      bank: document.getElementById('eCCBank').value.trim(),
+      num: document.getElementById('eCCNum').value.trim(),
+      limit: parseFloat(document.getElementById('eCCLimit').value)||0,
+      bal: parseFloat(document.getElementById('eCCBal').value)||0,
+      due: parseInt(document.getElementById('eCCDue').value)||15,
+      cur: eCCCur,
+    };
+  } else if(type === 'dc'){
+    S.dcs[index] = {...S.dcs[index],
+      bank: document.getElementById('eDCBank').value.trim(),
+      bal: parseFloat(document.getElementById('eDCBal').value)||0,
+      cur: eDCCur2,
+    };
+  } else if(type === 'asset'){
+    S.assets[index] = {...S.assets[index],
+      name: document.getElementById('eAName').value.trim(),
+      type: document.getElementById('eAType').value.trim(),
+      val: parseFloat(document.getElementById('eAVal').value)||0,
+      bought: parseFloat(document.getElementById('eABought').value)||0,
+      cur: eACur,
+    };
+  } else if(type === 'debt'){
+    S.debts[index] = {...S.debts[index],
+      name: document.getElementById('eDName').value.trim(),
+      amt: parseFloat(document.getElementById('eDAmt').value)||0,
+      cur: eDCur,
+      date: document.getElementById('eDDate').value,
+      note: document.getElementById('eDNote').value.trim(),
+    };
+  } else if(type === 'goal'){
+    S.goals[index] = {...S.goals[index],
+      name: document.getElementById('eGName').value.trim(),
+      target: parseFloat(document.getElementById('eGTarget').value)||0,
+      current: parseFloat(document.getElementById('eGCurrent').value)||0,
+      date: document.getElementById('eGDate').value,
+      cur: eGCur,
+    };
+  } else if(type === 'sub'){
+    S.subscriptions[index] = {...S.subscriptions[index],
+      name: document.getElementById('eSName').value.trim(),
+      amt: parseFloat(document.getElementById('eSAmt').value)||0,
+      day: parseInt(document.getElementById('eSDay').value)||1,
+      cat: document.getElementById('eSCat').value.trim(),
+      cur: eSCur2,
+    };
+  } else if(type === 'recur'){
+    S.recurs[index] = {...S.recurs[index],
+      name: document.getElementById('eRName').value.trim(),
+      amt: parseFloat(document.getElementById('eRAmt').value)||0,
+      day: parseInt(document.getElementById('eRDay').value)||1,
+      cur: eRCur,
+      type: eRType,
+    };
+  } else if(type === 'chit'){
+    S.chits[index] = {...S.chits[index],
+      name: document.getElementById('eCHName').value.trim(),
+      total: parseFloat(document.getElementById('eCHTotal').value)||0,
+      monthly: parseFloat(document.getElementById('eCHMonthly').value)||0,
+      members: parseInt(document.getElementById('eCHMembers').value)||0,
+      payoutMonth: parseInt(document.getElementById('eCHPayout').value)||0,
+      start: document.getElementById('eCHStart').value,
+      note: document.getElementById('eCHNote').value.trim(),
+    };
+  } else if(type === 'future'){
+    S.futureExps[index] = {...S.futureExps[index],
+      name: document.getElementById('eFName').value.trim(),
+      amt: parseFloat(document.getElementById('eFAmt').value)||0,
+      date: document.getElementById('eFDate').value,
+      cat: document.getElementById('eFCat').value.trim(),
+      note: document.getElementById('eFNote').value.trim(),
+    };
+  }
+
+  save();
+  renderAll();
+  closeEditModal();
+}
+
+// ── DELETE ITEM ──
+function deleteItem(type, index){
+  if(!confirm('Delete this item? This cannot be undone.')) return;
+  const S = window.S;
+  if(type === 'txn') S.txns.splice(index, 1);
+  else if(type === 'inv') S.investments.splice(index, 1);
+  else if(type === 'cc') S.ccs.splice(index, 1);
+  else if(type === 'dc') S.dcs.splice(index, 1);
+  else if(type === 'asset') S.assets.splice(index, 1);
+  else if(type === 'debt') S.debts.splice(index, 1);
+  else if(type === 'goal') S.goals.splice(index, 1);
+  else if(type === 'sub') S.subscriptions.splice(index, 1);
+  else if(type === 'recur') S.recurs.splice(index, 1);
+  else if(type === 'chit') S.chits.splice(index, 1);
+  else if(type === 'future') S.futureExps.splice(index, 1);
+  save();
+  renderAll();
+  closeEditModal();
+}
+
+// ════════════════════════════════════════════════════════
+// PATCH RENDER FUNCTIONS TO ADD EDIT BUTTONS
+// ════════════════════════════════════════════════════════
+
+// Override txn row to add edit button
+const _origTxnRow = window.txnRow || function(){return '';};
+window.txnRowWithEdit = function(t, index){
+  const bg = t.type==='income'?'rgba(0,212,170,.1)':'rgba(255,77,109,.08)';
+  return `<div class="list-item" style="position:relative;">
+    <div class="li-icon" style="background:${bg};">${(t.cat||'').split(' ')[0]}</div>
+    <div class="li-info" onclick="openEditModal('txn',${index})" style="cursor:pointer;">
+      <div class="li-name">${t.name}</div>
+      <div class="li-meta">${t.cat||''}${t.note?' · '+t.note:''} · ${t.date?new Date(t.date).toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}</div>
+    </div>
+    <div class="li-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+      <div class="li-val" style="color:${t.type==='income'?'var(--teal)':'var(--coral)'};">${t.type==='income'?'+':'-'}${fmt(t.amt||0,t.cur)}</div>
+      <button onclick="openEditModal('txn',${index})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:2px 8px;border-radius:50px;cursor:pointer;font-size:10px;font-weight:600;">Edit</button>
+    </div>
+  </div>`;
+};
+
+// Re-render transactions with edit buttons
+const _origRenderTxns = window.renderTxns;
+window.renderTxns = function(){
+  const S = window.S;
+  const el = document.getElementById('allTxns');
+  const em = document.getElementById('txnEmpty');
+  if(!el) return;
+  if(!S.txns.length){
+    el.innerHTML='';
+    if(em) em.innerHTML=`<div class="empty"><div class="empty-icon">💸</div><div class="empty-title">No transactions yet</div><button class="btn-primary" onclick="openModal('txnModal','expense')" style="margin-top:8px;">+ Add Transaction</button></div>`;
+  } else {
+    if(em) em.innerHTML='';
+    el.innerHTML = S.txns.map((t,i) => window.txnRowWithEdit(t,i)).join('');
+  }
+  // Also update recent in dashboard
+  const recent = document.getElementById('recentTxns');
+  if(recent) recent.innerHTML = S.txns.slice(0,5).map((t,i) => window.txnRowWithEdit(t,i)).join('') ||
+    '<div class="empty"><div class="empty-icon">💸</div><div class="empty-title">No transactions</div></div>';
+};
+
+// Add edit to investments
+const _origRenderInv = window.renderInvestments;
+window.renderInvestments = function(){
+  const S = window.S;
+  const el = document.getElementById('invList');
+  if(!el) return;
+  if(!S.investments||!S.investments.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📈</div><div class="empty-title">No investments</div><button class="btn-primary" onclick="openModal(\'invModal\')" style="margin-top:8px;">+ Add</button></div>';
+    document.getElementById('invTotals').innerHTML='';
+    return;
+  }
+  // Calc totals
+  const ti=S.investments.reduce((s,i)=>s+toP(i.amt||0,i.cur),0);
+  const tc=S.investments.reduce((s,i)=>s+toP(i.current||i.amt||0,i.cur),0);
+  const tr=tc-ti;
+  const tm=S.investments.filter(i=>i.returnType==='monthly'&&i.monthly>0).reduce((s,i)=>s+toP(i.monthly||0,i.cur),0);
+  document.getElementById('invTotals').innerHTML=`
+    <div class="totals-bar" style="margin-bottom:12px;">
+      <div class="tb-item"><div class="tb-label">Invested</div><div class="tb-val" style="color:var(--text2)">${fmt(ti)}</div></div>
+      <div class="tb-item"><div class="tb-label">Current</div><div class="tb-val" style="color:var(--teal)">${fmt(tc)}</div></div>
+      <div class="tb-item"><div class="tb-label">Return</div><div class="tb-val" style="color:${tr>=0?'var(--teal)':'var(--coral)'}">${tr>=0?'+':''}${fmt(tr)}</div></div>
+      <div class="tb-item"><div class="tb-label">Monthly</div><div class="tb-val" style="color:var(--gold)">${fmt(tm)}</div></div>
+    </div>`;
+  el.innerHTML = S.investments.map((inv,i)=>{
+    const cv=toP(inv.current||inv.amt||0,inv.cur);
+    const iv=toP(inv.amt||0,inv.cur);
+    const ret=cv-iv;
+    const pct=iv>0?Math.round(ret/iv*100):0;
+    return `<div class="list-item" style="flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+      <div class="li-icon" style="background:rgba(232,184,75,.1);">${(inv.type||'').split(' ')[0]}</div>
+      <div class="li-info">
+        <div class="li-name">${inv.name}</div>
+        <div class="li-meta">${inv.type}${inv.monthly>0?' · '+fmt(inv.monthly,inv.cur)+'/mo':''}</div>
+      </div>
+      <div class="li-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+        <div class="li-val" style="color:var(--gold);">${fmt(cv,inv.cur)}</div>
+        <div style="font-size:10px;color:${ret>=0?'var(--teal)':'var(--coral)'};">${ret>=0?'+':''}${pct}%</div>
+        <button onclick="openEditModal('inv',${i})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:2px 8px;border-radius:50px;cursor:pointer;font-size:10px;font-weight:600;">Edit</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+// Patch renderDebts to add edit
+const _origRenderDebts2 = window.renderDebts;
+window.renderDebts = function(){
+  const S = window.S;
+  const ome = S.debts.filter(d=>d.dir==='owe_me');
+  const iow = S.debts.filter(d=>d.dir==='i_owe');
+  const omeT = ome.reduce((s,d)=>s+toP(d.amt,d.cur),0);
+  const iowT = iow.reduce((s,d)=>s+toP(d.amt,d.cur),0);
+  const dColor=n=>{const c=['#2a1a6a','#0a3a1a','#3a0a1a','#0a1a3a','#2a100a'];return c[n.charCodeAt(0)%c.length];};
+
+  document.getElementById('oweMeList').innerHTML = ome.length
+    ? ome.map((d,i)=>{
+        const idx = S.debts.indexOf(d);
+        return `<div class="list-item" style="flex-wrap:wrap;gap:8px;margin-bottom:7px;">
+          <div class="li-icon" style="background:${dColor(d.name)};color:#fff;font-weight:700;">${d.name[0].toUpperCase()}</div>
+          <div class="li-info">
+            <div class="li-name">${d.name}</div>
+            <div class="li-meta">${d.note||'No note'} · ${new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+          </div>
+          <div class="li-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="li-val" style="color:var(--teal);">${fmt(d.amt,d.cur)}</div>
+            <button onclick="openEditModal('debt',${idx})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:2px 8px;border-radius:50px;cursor:pointer;font-size:10px;font-weight:600;">Edit</button>
+          </div>
+          <div style="display:flex;gap:6px;width:100%;">
+            <button onclick="sendWhatsApp('${d.name}',${d.amt},'${d.cur}','${d.note||''}')" style="flex:1;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.2);color:#25d366;padding:7px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">📱 WhatsApp</button>
+            <button onclick="deleteItem('debt',${idx})" style="background:transparent;border:1px solid var(--border);color:var(--coral);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:12px;">✓ Settled</button>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="empty" style="padding:20px;"><div class="empty-icon">🤝</div><div class="empty-title">Nobody owes you</div><button class="btn-primary" onclick="openDebtModal('owe_me')" style="margin-top:8px;">+ Add</button></div>`;
+
+  document.getElementById('oweMeTotal').innerHTML = ome.length
+    ? `<div class="totals-bar" style="margin-bottom:12px;"><div class="tb-item"><div class="tb-label">To Collect</div><div class="tb-val" style="color:var(--teal)">${fmt(omeT)}</div></div></div>` : '';
+
+  document.getElementById('iOweList').innerHTML = iow.length
+    ? iow.map((d,i)=>{
+        const idx = S.debts.indexOf(d);
+        return `<div class="list-item" style="flex-wrap:wrap;gap:8px;margin-bottom:7px;">
+          <div class="li-icon" style="background:${dColor(d.name)};color:#fff;font-weight:700;">${d.name[0].toUpperCase()}</div>
+          <div class="li-info">
+            <div class="li-name">${d.name}</div>
+            <div class="li-meta">${d.note||'No note'} · ${new Date(d.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+          </div>
+          <div class="li-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="li-val" style="color:var(--coral);">${fmt(d.amt,d.cur)}</div>
+            <button onclick="openEditModal('debt',${idx})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:2px 8px;border-radius:50px;cursor:pointer;font-size:10px;font-weight:600;">Edit</button>
+          </div>
+          <div style="width:100%;"><button onclick="deleteItem('debt',${idx})" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--teal);padding:7px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">✓ Paid Back</button></div>
+        </div>`;
+      }).join('')
+    : `<div class="empty" style="padding:20px;"><div class="empty-icon">🙏</div><div class="empty-title">You don't owe anyone</div><button class="btn-primary" onclick="openDebtModal('i_owe')" style="margin-top:8px;">+ Add</button></div>`;
+
+  document.getElementById('iOweTotal').innerHTML = iow.length
+    ? `<div class="totals-bar" style="margin-bottom:12px;"><div class="tb-item"><div class="tb-label">To Pay Back</div><div class="tb-val" style="color:var(--coral)">${fmt(iowT)}</div></div></div>` : '';
+};
+
+// Patch renderCards to add edit
+const _origRenderCards2 = window.renderCards;
+window.renderCards = function(){
+  _origRenderCards2();
+  // Add edit buttons to CC cards
+  document.querySelectorAll('.cc-act').forEach((btn,i)=>{
+    if(btn.textContent.includes('Update Balance')){
+      btn.textContent = '✏️ Edit Card';
+      btn.onclick = ()=> openEditModal('cc', Math.floor(i/2));
+    }
+  });
+};
+
+// Add edit to assets list
+const _origRenderAssets2 = window.renderAssets;
+window.renderAssets = function(){
+  const S = window.S;
+  const total = S.assets.reduce((s,a)=>s+toP(a.val,a.cur),0);
+  document.getElementById('assetTotal').innerHTML = S.assets.length
+    ? `<div class="totals-bar" style="margin-bottom:12px;"><div class="tb-item"><div class="tb-label">Total Value</div><div class="tb-val" style="color:var(--teal)">${fmt(total)}</div></div></div>` : '';
+  document.getElementById('assetList').innerHTML = S.assets.length
+    ? S.assets.map((a,i)=>`
+        <div class="list-item" style="margin-bottom:6px;">
+          <div class="li-icon" style="background:rgba(232,184,75,.1);">${(a.type||'').split(' ')[0]}</div>
+          <div class="li-info">
+            <div class="li-name">${a.name}</div>
+            <div class="li-meta">${a.type}</div>
+          </div>
+          <div class="li-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="li-val" style="color:var(--teal);">${fmt(a.val,a.cur)}</div>
+            ${a.bought>0?`<div style="font-size:10px;color:var(--muted);">Paid: ${fmt(a.bought,a.cur)}</div>`:''}
+            <button onclick="openEditModal('asset',${i})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:2px 8px;border-radius:50px;cursor:pointer;font-size:10px;font-weight:600;">Edit</button>
+          </div>
+        </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">🏠</div><div class="empty-title">No assets</div><button class="btn-primary" onclick="openModal(\'assetModal\')" style="margin-top:8px;">+ Add</button></div>';
+};
+
+// Add edit to goals
+const _origRenderGoals2 = window.renderGoals;
+window.renderGoals = function(){
+  const S = window.S;
+  document.getElementById('goalList').innerHTML = S.goals.length
+    ? S.goals.map((g,i)=>{
+        const p=Math.min(100,Math.round(g.current/g.target*100));
+        const dl=g.date?Math.ceil((new Date(g.date)-new Date())/86400000):null;
+        return `<div class="budget-item" style="margin-bottom:8px;">
+          <div class="budget-top">
+            <div class="budget-left"><span>🎯 ${g.name}</span></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="text-align:right;"><div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal);">${fmt(g.current,g.cur)}</div><div style="font-size:11px;color:var(--muted);">of ${fmt(g.target,g.cur)}</div></div>
+            </div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:4px;">${p}% · ${dl!==null?(dl>0?dl+' days left':'Due today'):'No deadline'}</div>
+          <div class="budget-bar"><div class="budget-fill" style="width:${p}%;background:${p>=100?'var(--teal)':'var(--gold)'};"></div></div>
+          <div style="display:flex;gap:7px;margin-top:9px;">
+            <button style="flex:1;background:var(--s3);border:1px solid var(--border);color:var(--text2);padding:7px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="addToGoal(${i})">+ Add Money</button>
+            <button onclick="openEditModal('goal',${i})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;">✏️ Edit</button>
+            <button style="background:transparent;border:1px solid var(--border);color:var(--coral);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="deleteItem('goal',${i})">Delete</button>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="empty"><div class="empty-icon">🏆</div><div class="empty-title">No goals</div><button class="btn-primary" onclick="openModal(\'goalModal\')" style="margin-top:8px;">+ Add</button></div>';
+
+  document.getElementById('recurList').innerHTML = S.recurs.length
+    ? S.recurs.map((r,i)=>`
+        <div class="list-item" style="margin-bottom:6px;">
+          <div class="li-icon" style="background:${r.type==='income'?'rgba(0,212,170,.1)':'rgba(255,77,109,.08)'};">${r.type==='income'?'📥':'📤'}</div>
+          <div class="li-info"><div class="li-name">${r.name}</div><div class="li-meta">Every month · Day ${r.day}</div></div>
+          <div class="li-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="li-val" style="color:${r.type==='income'?'var(--teal)':'var(--coral)'};">${fmt(r.amt,r.cur)}</div>
+            <button onclick="openEditModal('recur',${i})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:2px 8px;border-radius:50px;cursor:pointer;font-size:10px;font-weight:600;">Edit</button>
+          </div>
+        </div>`).join('')
+    : '<div class="empty" style="padding:16px;"><div class="empty-icon">🔄</div><div class="empty-title">No recurring</div><button class="btn-primary" onclick="openModal(\'recurModal\')" style="margin-top:8px;">+ Add</button></div>';
+};
+
+// Add edit to subscriptions
+const _origRenderSubs2 = window.renderSubscriptions;
+window.renderSubscriptions = function(){
+  const S = window.S;
+  const total = S.subscriptions.reduce((s,sb)=>s+toP(sb.amt,sb.cur),0);
+  document.getElementById('subTotals').innerHTML = S.subscriptions.length
+    ? `<div class="totals-bar" style="margin-bottom:12px;"><div class="tb-item"><div class="tb-label">Monthly</div><div class="tb-val" style="color:var(--coral)">${fmt(total)}</div></div><div class="tb-item"><div class="tb-label">Annual</div><div class="tb-val" style="color:var(--orange)">${fmt(total*12)}</div></div><div class="tb-item"><div class="tb-label">Count</div><div class="tb-val">${S.subscriptions.length}</div></div></div>` : '';
+  document.getElementById('subList').innerHTML = S.subscriptions.length
+    ? S.subscriptions.map((sb,i)=>`
+        <div class="list-item" style="margin-bottom:6px;">
+          <div class="li-icon" style="background:rgba(139,109,255,.1);">${(sb.cat||'').split(' ')[0]}</div>
+          <div class="li-info"><div class="li-name">${sb.name}</div><div class="li-meta">${sb.cat} · Day ${sb.day}</div></div>
+          <div class="li-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div class="li-val" style="color:var(--coral);">${fmt(sb.amt,sb.cur)}/mo</div>
+            <button onclick="openEditModal('sub',${i})" style="background:var(--s3);border:1px solid var(--border2);color:var(--text2);padding:2px 8px;border-radius:50px;cursor:pointer;font-size:10px;font-weight:600;">Edit</button>
+          </div>
+        </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">📱</div><div class="empty-title">No subscriptions</div><button class="btn-primary" onclick="openModal(\'subModal\')" style="margin-top:8px;">+ Add</button></div>';
+};
+
+console.log('✅ Edit system loaded — all items now editable');
 </script>
